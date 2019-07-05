@@ -160,6 +160,11 @@ main() {
 
     ask_for_sudo
 
+    # If the script was run independantly the rest of the files will need to be downloaded.
+
+    printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &> /dev/null \
+        || download_dotfiles
+
     ./create_directories.sh "$@"
 
     ./create_symbolic_links.sh "$@"
