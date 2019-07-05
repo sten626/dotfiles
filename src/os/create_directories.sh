@@ -15,7 +15,8 @@ create_directories() {
 }
 
 link_workspace() {
-    local -r SOURCE="/mnt/c/Users/sindzeos/workspace"
+    declare -r WINDOWS_USER=$(get_windows_user)
+    local -r SOURCE="/mnt/c/Users/$WINDOWS_USER/workspace"
     local -r TARGET="$HOME/workspace"
 
     local skipQuestions=false
