@@ -83,7 +83,7 @@ get_os_version() {
 get_windows_user() {
     local user=""
 
-    user="$(cmd.exe /c "echo %USERNAME%")"
+    user="$(cmd.exe /c "echo %USERNAME%" | sed -e 's/\r//g')"
 
     printf "%s" "$user"
 }

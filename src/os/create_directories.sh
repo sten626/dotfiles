@@ -4,8 +4,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "utils.sh"
 
 create_directories() {
+    declare -r WINDOWS_USER=$(get_windows_user)
     declare -a DIRECTORIES=(
-        "/mnt/c/Users/sindzeos/workspace"
+        "/mnt/c/Users/$WINDOWS_USER/workspace"
     )
 
     for i in "${DIRECTORIES[@]}"; do
