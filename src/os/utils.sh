@@ -80,6 +80,14 @@ get_os_version() {
     printf "%s" "$version"
 }
 
+get_windows_user() {
+    local user=""
+
+    user="$(cmd.exe /c "echo %USERNAME%")"
+
+    printf "%s" "$user"
+}
+
 is_supported_version() {
     declare -a v1=(${1//./ })
     declare -a v2=(${2//./ })
