@@ -1,6 +1,46 @@
 #!/bin/bash
 
+declare -r GITHUB_REPOSITORY="sten626/dotfiles"
+
+declare -r DOTFILES_UTILS_URL="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/master/src/os/utils.sh"
+
 declare skipQuestions=false
+
+download() {
+    local url="$1"
+    local outfile="$2"
+
+    if command -v "curl" &> /dev/null; then
+        curl -LsSo "$outfile" "$url" &> /dev/null
+        #     │││└─ write output to file
+        #     ││└─ show error messages
+        #     │└─ don't show progress meter
+        #     └─ follow redirects
+
+        return $?
+    elif command -v "wget" &> /dev/null; then
+        wget -qO "$outfile" "$url" &> /dev/null
+        #     │└─ write output to file
+        #     └─ don't show output
+
+        return $?
+    fi
+
+    return 1
+}
+
+download_utils() {
+    local tmpFile=""
+
+    tmpFile="$(mktemp /tmp/XXXXX)"
+
+    download "$DOTFILES_UTILS_URL" "$tmpFile" \
+        && . "$tmpFile" \
+        && rm -rf "$tmpFile" \
+        && return 0
+
+    return 1
+}
 
 verify_os() {
     declare -r MINIMUM_UBUNTU_VERSION="16.04"
@@ -30,7 +70,11 @@ main() {
 
     # Load utils
 
-    . "utils.sh" || exit 1
+    if [ -x "utils.sh" ]; then
+        . "utils.sh" || exit 1
+    else
+        download_utils || exit 1
+    fi
 
     # Ensure the OS is supported
 
