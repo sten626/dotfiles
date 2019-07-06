@@ -5,6 +5,13 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
 
 create_symlinks() {
     declare -a FILES_TO_SYMLINK=(
+        "shell/bash_aliases"
+        "shell/bash_autocomplete"
+        "shell/bash_exports"
+        "shell/bash_functions"
+        "shell/bash_options"
+        "shell/bash_profile"
+        "shell/bash_prompt"
         "shell/bashrc"
     )
 
