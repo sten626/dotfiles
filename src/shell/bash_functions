@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Create new directories and enter.
+
+mkd() {
+    if [ -n "$*" ]; then
+        mkdir -p "$@"
+
+        cd "$@" \
+            || exit 1
+    fi
+}
