@@ -122,5 +122,30 @@ set_prompts() {
 
     export PS1
 
-    # TODO: not done this yet
+    # PS2 - Continuation interactive prompt
+
+    PS2="⚡ "
+
+    export PS2
+
+    # PS4 - Debug prompt
+
+    PS4="+$(tput cr 2> /dev/null;
+            tput cuf 6 2> /dev/null;
+            printf "%s" "$reset")"
+
+    export PS4
 }
+
+main() {
+    enable_colour_support
+    set_prompts
+}
+
+main
+
+# Cleanup
+
+unset -f enable_colour_support
+unset -f main
+unset -f set_prompts

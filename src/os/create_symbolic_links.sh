@@ -29,7 +29,7 @@ create_symlinks() {
 
         if [ ! -e "$targetFile" ] || $skipQuestions; then
             execute \
-                "ln -fs $sourceFile $targetFille" \
+                "ln -fs $sourceFile $targetFile" \
                 "$targetFile → $sourceFile"
         elif [ "$(readlink "$targetFile")" == "$sourceFile" ]; then
             print_success "$targetFile → $sourceFile"
