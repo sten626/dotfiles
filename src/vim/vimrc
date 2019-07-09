@@ -6,7 +6,6 @@ syntax on
 
 set autoindent
 
-set backupdir=~/.vim/backups
 set backupskip=/tmp/*
 set backupskip+=/private/tmp/*
 
