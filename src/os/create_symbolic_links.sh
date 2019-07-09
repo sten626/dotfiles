@@ -15,6 +15,8 @@ create_symlinks() {
         "shell/bashrc"
         "shell/curlrc"
         "shell/inputrc"
+
+        "git/gitconfig"
     )
 
     local i=""
@@ -43,7 +45,7 @@ create_symlinks() {
                     rm -rf "$targetFile"
 
                     execute \
-                        "ln -fs $sourceFile $targetFille" \
+                        "ln -fs $sourceFile $targetFile" \
                         "$targetFile → $sourceFile"
                 else
                     print_error "$targetFile → $sourceFile"
