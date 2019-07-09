@@ -18,6 +18,8 @@ create_symlinks() {
 
         "git/gitconfig"
         "git/gitignore"
+
+        "vim/vimrc"
     )
 
     local i=""

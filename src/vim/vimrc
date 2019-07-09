@@ -1,0 +1,31 @@
+" General
+
+set nocompatible
+
+syntax on
+
+set autoindent
+
+set backupdir=~/.vim/backups
+set backupskip=/tmp/*
+set backupskip+=/private/tmp/*
+
+set clipboard=unnamed
+
+if has("unnamedplus")
+    set clipboard+=unnamedplus
+endif
+
+set magic
+set noerrorbells
+set number
+set numberwidth=5
+
+set showcmd
+set showmode
+set spelllang=en_us
+
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
