@@ -17,6 +17,7 @@ create_symlinks() {
         "shell/inputrc"
 
         "git/gitconfig"
+        "git/gitignore"
     )
 
     local i=""
