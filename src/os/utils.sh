@@ -24,6 +24,10 @@ ask_for_sudo() {
     done &> /dev/null &
 }
 
+cmd_exists() {
+    command -v "$1" &> /dev/null
+}
+
 execute() {
     local -r CMDS="$1"
     local -r MSG="${2:-$1}"
@@ -86,6 +90,10 @@ get_windows_user() {
     user="$(cmd.exe /c "echo %USERNAME%" | sed -e 's/\r//g')"
 
     printf "%s" "$user"
+}
+
+is_git_repository() {
+    git rev-parse &> /dev/null
 }
 
 is_supported_version() {
