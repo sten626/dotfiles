@@ -183,6 +183,10 @@ main() {
             ./update_content.sh
         fi
     fi
+
+    if ! $skipQuestions; then
+        ./restart.sh
+    fi
 }
 
 main "$@"
