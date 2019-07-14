@@ -3,8 +3,10 @@
 declare -r GITHUB_REPOSITORY="sten626/dotfiles"
 
 declare -r DOTFILES_ORIGIN="git@github.com:$GITHUB_REPOSITORY.git"
-declare -r DOTFILES_TARBALL_URL="https://github.com/$GITHUB_REPOSITORY/tarball/master"
-declare -r DOTFILES_UTILS_URL="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/master/src/os/utils.sh"
+
+# TODO: CHANGE THESE BACK TO MASTER!!
+declare -r DOTFILES_TARBALL_URL="https://github.com/$GITHUB_REPOSITORY/tarball/issue-4"
+declare -r DOTFILES_UTILS_URL="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/issue-4/src/os/utils.sh"
 
 declare dotfilesDirectory="$HOME/workspace/dotfiles"
 declare skipQuestions=false
