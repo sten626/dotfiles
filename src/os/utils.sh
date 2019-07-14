@@ -63,6 +63,10 @@ execute() {
     return $exitCode
 }
 
+get_answer() {
+    printf "%s" "$REPLY"
+}
+
 get_os() {
     local os=""
     local kernelName=""
