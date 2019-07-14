@@ -28,7 +28,7 @@ bash -c "$(wget -qO - https://raw.github.com/sten626/dotfiles/master/src/os/setu
 
 The `~/.bash.local` file is sourced last and is a good place to store local aliases or `PATH` modifications.
 
-#### ~/.gitconfig.local`
+#### `~/.gitconfig.local`
 
 The `~/.gitconfig.local` is included by the regular `~/.gitconfig` file and is the ideal place to store sensitive or personal information such as your name or email address.
 
