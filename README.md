@@ -8,6 +8,8 @@ To set up everything do either of the following.
 
 - Run the following command which should handle everything:
 
-    bash -c "$(wget -qO - https://raw.github.com/sten626/dotfiles/master/src/os/setup.sh)"
+```bash
+bash -c "$(wget -qO - https://raw.github.com/sten626/dotfiles/master/src/os/setup.sh)"
+```
 
 - If you already have Git installed, you can just clone the repository and run `src/os/setup.sh`.
