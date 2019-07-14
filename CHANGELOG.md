@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2019-07-14
+
 ### Fixed
 
 - Fixing various issues with running the setup script independantly.
@@ -15,5 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/sten626/dotfiles/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/sten626/dotfiles/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/sten626/dotfiles/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/sten626/dotfiles/releases/tag/1.0.0
