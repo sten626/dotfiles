@@ -13,8 +13,9 @@ enable_colour_support() {
     LS_COLORS+="fi=0;39:"   # File
     LS_COLORS+="ec=:"       # Non-filename text
     LS_COLORS+="mi=1;31:"   # Non-existent file pointed to by a symlink
+    LS_COLORS+="ow=0;36:"   # "Other writeable" directory
     LS_COLORS+="ln=target:" # Symbolic link
-    LS_COLORS+="or=31;01"   # Symbolic link pointing to a non-existent file
+    LS_COLORS+="or=31;01:"  # Symbolic link pointing to a non-existent file
 
     export LS_COLORS
 
