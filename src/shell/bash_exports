@@ -4,27 +4,25 @@
 # https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
 
 # Make `vim` the default editor.
-
 export EDITOR="vim"
 
 # Ignore commands that start with spaces or are duplicates.
-
 export HISTCONTROL=ignoreboth
 
 # Ignore certain commands for history.
-
 export HISTIGNORE="&:[bf]g:c:clear:history:exit:pwd:* --help"
 
-# Language settings.
+# For setting history length.
+export HISTSIZE=1000
+export HISTFILESIZE=2000
 
+# Language settings.
 export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
 
 # Custom `less` colours for `man` pages.
-
 export LESS_TERMCAP_md="$(tput bold 2> /dev/null; tput setaf 2 2> /dev/null)"
 export LESS_TERMCAP_me="$(tput sgr0 2> /dev/null)"
 
 # Don't clear the screen after quitting a `man` page.
-
 export MANPAGER="less -X"
