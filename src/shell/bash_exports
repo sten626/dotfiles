@@ -3,6 +3,10 @@
 # Bash Variables.
 # https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
 
+# Set CHROME_BIN to the default Windows Chrome location.
+# For Karma/Jasmine.
+export CHROME_BIN="/mnt/c/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+
 # Make `vim` the default editor.
 export EDITOR="vim"
 
