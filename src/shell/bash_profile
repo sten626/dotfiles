@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Source all the bash files.
+
 source_bash_files() {
     declare -r CURRENT_DIRECTORY="$(pwd)"
 
@@ -29,4 +31,37 @@ source_bash_files() {
 source_bash_files
 unset -f source_bash_files
 
-# clear
+# Run the SSH agent so you don't have to type your passphrase constantly.
+
+env=~/.ssh/agent.env
+
+agent_load_env() {
+    if [ -f "$env" ]; then
+        . "$env" >| /dev/null
+    fi
+}
+
+agent_start() {
+    (umask 077; ssh-agent >| "$env")
+    . "$env" >| /dev/null
+}
+
+agent_load_env
+
+# agent_run_state:
+#   0 = agent running w/ key
+#   1 = agent running w/o key
+#   2 = agent not running
+agent_run_state=$(ssh-add -l >| /dev/null 2>&1; echo $?)
+
+if [ ! "$SSH_AUTH_SOCK" ] || [ $agent_run_state = 2 ]; then
+    echo "first"
+    agent_start
+    ssh-add
+elif [ "$SSH_AUTH_SOCK" ] && [ $agent_run_state = 1 ]; then
+    echo "second"
+    ssh-add
+fi
+
+unset agent_run_state env
+unset -f agent_load_env agent_start

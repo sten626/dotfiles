@@ -7,23 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.2] - 2019-07-18
+## [v1.1.0] - 2019-07-18
+
+### Added
+
+- SSH agent launching for WSL.
+
+## [v1.0.2] - 2019-07-18
 
 ### Fixed
 
 - Fixing ugly highlighting on directories when using `ls`.
 
-## [1.0.1] - 2019-07-14
+## [v1.0.1] - 2019-07-14
 
 ### Fixed
 
 - Fixing various issues with running the setup script independantly.
 
-## [1.0.0] - 2019-07-13
+## [v1.0.0] - 2019-07-13
 
 - Initial release
 
-[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.0.2...HEAD
-[1.0.2]: https://github.com/sten626/dotfiles/compare/v1.0.1...v1.0.2
-[1.0.1]: https://github.com/sten626/dotfiles/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/sten626/dotfiles/releases/tag/v1.0.0
+[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.1.0...HEAD
+[v1.1.0]: https://github.com/sten626/dotfiles/compare/v1.0.2...v1.1.0
+[v1.0.2]: https://github.com/sten626/dotfiles/compare/v1.0.1...v1.0.2
+[v1.0.1]: https://github.com/sten626/dotfiles/compare/v1.0.0...v1.0.1
+[v1.0.0]: https://github.com/sten626/dotfiles/releases/tag/v1.0.0
