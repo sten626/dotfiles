@@ -87,21 +87,21 @@ set_prompts() {
     local bold=$(tput bold 2> /dev/null)
     local reset=$(tput sgr0 2> /dev/null)
 
+    local blue=""
     local cyan=""
     local green=""
-    local orange=""
+    local violet=""
     local white=""
-    local yellow=""
 
     if [ "$(tput colors 2> /dev/null || printf "0")" -ge 256 ]; then
         # Solarized colors.
         # https://github.com/altercation/solarized/tree/master/iterm2-colors-solarized#the-values
 
+        blue=$(tput setaf 33)
         cyan=$(tput setaf 37)
         green=$(tput setaf 64)
-        orange=$(tput setaf 166)
+        violet=$(tput setaf 61)
         white=$(tput setaf 15)
-        yellow=$(tput setaf 136)
     fi
 
     # Prompt Statement variables.
@@ -111,15 +111,15 @@ set_prompts() {
 
     PS1="\[\033]0;\W\007\]" # Terminal title (cwd)
 
-    PS1+="$reset$bold"
-    PS1+="$orange\u"        # Username
-    PS1+="$white@"
-    PS1+="$yellow\h"        # Host
-    PS1+="$white: "
-    PS1+="$green\w"         # Working directory
-    PS1+="\$(get_git_repository_details \"$white on $cyan\")"
+    PS1+="\[$reset$bold"
+    PS1+="$green\]\u"        # Username
+    PS1+="\[$white\]@"
+    PS1+="\[$cyan\]\h"        # Host
+    PS1+="\[$white\]: "
+    PS1+="\[$blue\]\w"         # Working directory
+    PS1+="\$(get_git_repository_details \"$white on $violet\")"
     PS1+="\n"
-    PS1+="\[$reset\]\[$white\]$ \[$reset\]"
+    PS1+="\[$reset$white\]$ \[$reset\]"
 
     export PS1
 
