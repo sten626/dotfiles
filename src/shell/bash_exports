@@ -20,6 +20,9 @@ export HISTFILESIZE=2000
 export LANG="en_US"
 export LC_ALL="en_US.UTF-8"
 
+# Make `less` more user friendly for non-text input files.
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
 # Custom `less` colours for `man` pages.
 export LESS_TERMCAP_md="$(tput bold 2> /dev/null; tput setaf 2 2> /dev/null)"
 export LESS_TERMCAP_me="$(tput sgr0 2> /dev/null)"
