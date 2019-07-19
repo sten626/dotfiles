@@ -11,14 +11,17 @@ alias n="npm"
 alias w="cd $HOME/workspace"
 
 # apt
-
 alias apti="sudo apt install"
 alias aptr="sudo apt remove"
 alias apts="sudo apt search"
 alias aptu="sudo apt update && sudo apt upgrade"
 
-# Update applications and CLTs
+# ls
+alias ll="ls -alF"
+alias la="ls -A"
+alias l="ls -CF"
 
+# Update applications and CLTs
 alias u="sudo apt update \
             && sudo apt upgrade \
             && npm install --global npm \
