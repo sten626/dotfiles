@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Adding a few minor things from my old `.bashrc` that I hadn't ported over yet.
+- A few minor things from my old `.bashrc` that I hadn't ported over yet.
+- Some `git` aliases for merging.
 
 ## [v1.1.0] - 2019-07-18
 

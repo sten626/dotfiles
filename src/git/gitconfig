@@ -13,6 +13,8 @@
     git = !exec git                             # Allow `$ git git git...`
     l = log --pretty=custom                     # Show custom log.
     lc = shortlog --email --numbered --summary  # List contributors.
+    m = merge
+    mnff = merge --no-ff                        # Merge and ensure that there's a merge commit.
     p = push
     r = rebase
     s = status
