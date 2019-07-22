@@ -3,27 +3,13 @@
 enable_colour_support() {
     export TERM="xterm-256color"
 
-    # Set LS_COLORS
-
-    LS_COLORS=""
-
-    LS_COLORS+="no=0;39:"   # Global default
-    LS_COLORS+="di=0;36:"   # Directory
-    LS_COLORS+="ex=0;32:"   # Executable file
-    LS_COLORS+="fi=0;39:"   # File
-    LS_COLORS+="ec=:"       # Non-filename text
-    LS_COLORS+="mi=1;31:"   # Non-existent file pointed to by a symlink
-    LS_COLORS+="ow=0;36:"   # "Other writeable" directory
-    LS_COLORS+="ln=target:" # Symbolic link
-    LS_COLORS+="or=31;01:"  # Symbolic link pointing to a non-existent file
-
-    export LS_COLORS
-
     # Enable colour support
 
     if [ -x /usr/bin/dircolors ]; then
         if [ -r ~/.dircolors ]; then
             eval "$(dircolors -b ~/.dircolors)"
+        else
+            eval "$(dircolors -b)"
         fi
 
         alias dir="dir --color=auto"
@@ -87,21 +73,21 @@ set_prompts() {
     local bold=$(tput bold 2> /dev/null)
     local reset=$(tput sgr0 2> /dev/null)
 
+    local blue=""
     local cyan=""
     local green=""
-    local orange=""
+    local violet=""
     local white=""
-    local yellow=""
 
     if [ "$(tput colors 2> /dev/null || printf "0")" -ge 256 ]; then
         # Solarized colors.
         # https://github.com/altercation/solarized/tree/master/iterm2-colors-solarized#the-values
 
+        blue=$(tput setaf 33)
         cyan=$(tput setaf 37)
         green=$(tput setaf 64)
-        orange=$(tput setaf 166)
+        violet=$(tput setaf 61)
         white=$(tput setaf 15)
-        yellow=$(tput setaf 136)
     fi
 
     # Prompt Statement variables.
@@ -111,15 +97,15 @@ set_prompts() {
 
     PS1="\[\033]0;\W\007\]" # Terminal title (cwd)
 
-    PS1+="$reset$bold"
-    PS1+="$orange\u"        # Username
-    PS1+="$white@"
-    PS1+="$yellow\h"        # Host
-    PS1+="$white: "
-    PS1+="$green\w"         # Working directory
-    PS1+="\$(get_git_repository_details \"$white on $cyan\")"
+    PS1+="\[$reset$bold"
+    PS1+="$green\]\u"        # Username
+    PS1+="\[$white\]@"
+    PS1+="\[$cyan\]\h"        # Host
+    PS1+="\[$white\]: "
+    PS1+="\[$blue\]\w"         # Working directory
+    PS1+="\$(get_git_repository_details \"$white on $violet\")"
     PS1+="\n"
-    PS1+="\[$reset\]\[$white\]$ \[$reset\]"
+    PS1+="\[$reset$white\]$ \[$reset\]"
 
     export PS1
 

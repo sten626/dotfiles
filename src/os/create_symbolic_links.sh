@@ -14,6 +14,7 @@ create_symlinks() {
         "shell/bash_prompt"
         "shell/bashrc"
         "shell/curlrc"
+        "shell/dircolors"
         "shell/inputrc"
 
         "git/gitconfig"
