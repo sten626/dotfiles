@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Changes to colours used by `ls`; adding a dircolors file.
+
 ### Added
 
 - A few minor things from my old `.bashrc` that I hadn't ported over yet.
