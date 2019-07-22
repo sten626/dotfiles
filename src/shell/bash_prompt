@@ -3,27 +3,13 @@
 enable_colour_support() {
     export TERM="xterm-256color"
 
-    # Set LS_COLORS
-
-    LS_COLORS=""
-
-    LS_COLORS+="no=0;39:"   # Global default
-    LS_COLORS+="di=0;36:"   # Directory
-    LS_COLORS+="ex=0;32:"   # Executable file
-    LS_COLORS+="fi=0;39:"   # File
-    LS_COLORS+="ec=:"       # Non-filename text
-    LS_COLORS+="mi=1;31:"   # Non-existent file pointed to by a symlink
-    LS_COLORS+="ow=0;36:"   # "Other writeable" directory
-    LS_COLORS+="ln=target:" # Symbolic link
-    LS_COLORS+="or=31;01:"  # Symbolic link pointing to a non-existent file
-
-    export LS_COLORS
-
     # Enable colour support
 
     if [ -x /usr/bin/dircolors ]; then
         if [ -r ~/.dircolors ]; then
             eval "$(dircolors -b ~/.dircolors)"
+        else
+            eval "$(dircolors -b)"
         fi
 
         alias dir="dir --color=auto"
