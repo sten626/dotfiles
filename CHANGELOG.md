@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Information about relation to upstream in the prompt's git info.
+- Moving from Windows user home to WSL home when starting a new terminal.
 
 ## [v1.2.1] - 2019-07-22
 
