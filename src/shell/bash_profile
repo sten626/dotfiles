@@ -2,6 +2,14 @@
 
 # Source all the bash files.
 
+cd_to_wsl() {
+    # WSL terminal starts you in `/mnt/c/Users/...`; Start in `~` instead.
+    local -r WINDOWS_USER="$(cmd.exe /c "echo %USERNAME%" | sed -e 's/\r//g')"
+    local -r WINDOWS_HOME="/mnt/c/Users/$WINDOWS_USER"
+
+    cd ~/${PWD#$WINDOWS_HOME}
+}
+
 source_bash_files() {
     declare -r CURRENT_DIRECTORY="$(pwd)"
 
@@ -63,3 +71,7 @@ fi
 
 unset agent_run_state env
 unset -f agent_load_env agent_start
+
+cd_to_wsl
+
+unset -f cd_to_wsl
