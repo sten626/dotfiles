@@ -23,40 +23,55 @@ enable_colour_support() {
 
 get_git_repository_details() {
     local branchName=""
+    local count=""
     local tmp=""
 
     # Check if the current directory is in a Git repository.
-
     ! git rev-parse &> /dev/null \
         && return
     
     # Check if in `.git/` directory.
-
     [ "$(git rev-parse --is-inside-git-dir)" == "true" ] \
         && return
 
     # Check for uncommitted changes.
-
     if ! git diff --quiet --ignore-submodules --cached; then
         tmp="$tmp+"
     fi
 
     # Check for unstaged changes.
-
     if ! git diff-files --quiet --ignore-submodules --; then
         tmp="$tmp!"
     fi
 
     # Check for untracked files.
-
     if [ -n "$(git ls-files --others --exclude-standard)" ]; then
         tmp="$tmp?"
     fi
 
     # Check for stashed files.
-
     if git rev-parse --verify refs/stash &> /dev/null; then
         tmp="$tmp$"
+    fi
+
+    # Check if ahead/behind upstream.
+    count="$(git rev-list --count --left-right @{upstream}...HEAD 2> /dev/null)"
+
+    # Check that there was an upstream.
+    if [ ! -z "$count" ]; then
+        if [[ $count == 0?0 ]]; then
+            # Equal to upsteam.
+            tmp="$tmp="
+        elif [[ $count == 0* ]]; then
+            # Ahead of upstream.
+            tmp="$tmp>"
+        elif [[ $count == *0 ]]; then
+            # Behind upstream.
+            tmp="$tmp<"
+        else
+            # Diverged from upstream
+            tmp="$tmp<>"
+        fi
     fi
 
     [ -n "$tmp" ] \
