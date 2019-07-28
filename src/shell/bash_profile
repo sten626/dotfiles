@@ -7,7 +7,9 @@ cd_to_wsl() {
     local -r WINDOWS_USER="$(cmd.exe /c "echo %USERNAME%" | sed -e 's/\r//g')"
     local -r WINDOWS_HOME="/mnt/c/Users/$WINDOWS_USER"
 
-    cd ~/${PWD#$WINDOWS_HOME}
+    if [[ "$PWD" =~ $WINDOWS_HOME ]]; then
+        cd ~/${PWD#$WINDOWS_HOME}
+    fi
 }
 
 source_bash_files() {
