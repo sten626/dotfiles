@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Git alias for `commit`.
+
 ## [v1.3.1] - 2019-07-27
 
 ### Fixed
