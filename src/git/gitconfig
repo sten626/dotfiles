@@ -4,6 +4,7 @@
     br = branch
     c = commit
     ca = !git add -A && git commit              # Commit all changes.
+    ci = commit
     co = checkout
     cp = cherry-pick
     d = diff
