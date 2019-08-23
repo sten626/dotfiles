@@ -1,7 +1,12 @@
 [alias]
 
     a = commit --amend
+    bb = bisect bad
+    bi = bisect
+    bg = bisect good
     br = branch
+    bs = bisect skip
+    bv = !git bisect visualize &
     c = commit
     ca = !git add -A && git commit              # Commit all changes.
     ci = commit
