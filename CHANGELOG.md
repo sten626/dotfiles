@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New apps added to installation:
   - `traceroute`
   - `unzip`
+  - `whois`
 
 ## [v1.4.0] - 2019-08-05
 
