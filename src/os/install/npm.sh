@@ -10,6 +10,13 @@ install_npm_package() {
         "$1"
 }
 
+install_npx_package() {
+    execute \
+        ". $HOME/.bash.local \
+            && npx $2 install --global --silent" \
+        "$1"
+}
+
 main() {
     print_in_purple "\n   npm\n\n"
 
@@ -19,6 +26,8 @@ main() {
     install_npm_package "eslint" "eslint"
     install_npm_package "tslint" "tslint"
     install_npm_package "TypeScript" "typescript"
+
+    install_npx_package "npm-merge-driver" "npm-merge-driver"
 }
 
 main
