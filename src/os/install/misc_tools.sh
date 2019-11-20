@@ -7,5 +7,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
 print_in_purple "\n   Miscellaneous Tools\n\n"
 
 install_package "cURL" "curl"
-install_package "Htop" "htop"
+install_package "htop" "htop"
+install_package "traceroute" "traceroute"
+install_package "unzip" "unzip"
+install_package "whois" "whois"
 install_package "xclip" "xclip"

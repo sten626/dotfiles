@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.5.0] - 2019-11-20
+
+### Added
+
+- New alias `nu` for updating node.
+- New git aliases for bisecting.
+- New apps added to installation:
+  - `traceroute`
+  - `unzip`
+  - `whois`
+- Adding `npm-merge-driver`.
+
 ## [v1.4.0] - 2019-08-05
 
 ### Added
@@ -65,7 +77,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.5.0...develop
+[v1.5.0]: https://github.com/sten626/dotfiles/compare/v1.4.0...v1.5.0
 [v1.4.0]: https://github.com/sten626/dotfiles/compare/v1.3.1...v1.4.0
 [v1.3.1]: https://github.com/sten626/dotfiles/compare/v1.3.0...v1.3.1
 [v1.3.0]: https://github.com/sten626/dotfiles/compare/v1.2.1...v1.3.0
