@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New git aliases for bisecting.
 - New apps added to installation:
   - `traceroute`
+  - `unzip`
 
 ## [v1.4.0] - 2019-08-05
 
