@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `traceroute`
   - `unzip`
   - `whois`
+- Adding `npm-merge-driver`.
 
 ## [v1.4.0] - 2019-08-05
 

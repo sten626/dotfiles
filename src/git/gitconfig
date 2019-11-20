@@ -1,5 +1,4 @@
 [alias]
-
     a = commit --amend
     bb = bisect bad
     bi = bisect
@@ -58,15 +57,11 @@
         declare n=\"${1:-1}\"; \
         git reset --soft \"HEAD~$n\"; \
     }; f"
-
 [color "branch"]
-
     current = green bold
     local = green
     remote = yellow
-
 [color "diff"]
-
     frag = magenta
     meta = yellow
 
@@ -75,18 +70,16 @@
 
     newMoved = green
     oldMoved = red
-
 [core]
-
     abbrev = 12
     autocrlf = input
     editor = vim
     excludesfile = ~/.gitignore
-
 [diff]
-
     colorMoved = zebra
-
+[merge "npm-merge-driver"]
+	name = automatically merge npm lockfiles
+	driver = npx npm-merge-driver merge %A %O %B %P
 [pretty]
 
     custom = "%C(magenta)%h%C(red)%d %C(yellow)%ar %C(green)%s %C(yellow)(%an)"
@@ -96,17 +89,11 @@
     #                     │        │            └─ date (relative)
     #                     │        └─ decorations (branch, heads, or tags)
     #                     └─ hash (abbreviated)
-
 [push]
-
     followTags = true
-
 [user]
-
     # Store user specific info in `~/.gitconfig.local`
     useConfigOnly = true
-
 [include]
-
     # Load local config
     path = ~/.gitconfig.local
