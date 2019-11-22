@@ -5,17 +5,28 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "../utils.sh"
 
 install_npm_package() {
-    execute \
-        ". $HOME/.bash.local \
-            && npm install --global --silent $2" \
-        "$1"
+    declare -r PACKAGE_READABLE_NAME="$1"
+    declare -r PACKAGE="$2"
+
+    if ! npm_package_is_installed "$PACKAGE"; then
+        execute \
+            ". $HOME/.bash.local \
+                && npm install --global $PACKAGE" \
+            "$PACKAGE_READABLE_NAME"
+    else
+        print_success "$PACKAGE_READABLE_NAME"
+    fi
 }
 
 install_npx_package() {
     execute \
         ". $HOME/.bash.local \
-            && npx $2 install --global --silent" \
+            && npx $2 install --global" \
         "$1"
+}
+
+npm_package_is_installed() {
+    npm list --global "$1" &> /dev/null
 }
 
 main() {
