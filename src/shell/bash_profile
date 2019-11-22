@@ -47,6 +47,7 @@ env=~/.ssh/agent.env
 
 agent_load_env() {
     if [ -f "$env" ]; then
+        # shellcheck source=/dev/null
         . "$env" >| /dev/null
     fi
 }

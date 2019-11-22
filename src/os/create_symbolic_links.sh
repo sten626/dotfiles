@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# shellcheck source=src/os/utils.sh
 cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "utils.sh"
 
@@ -32,7 +33,7 @@ create_symlinks() {
         && skipQuestions=true
 
     for i in "${FILES_TO_SYMLINK[@]}"; do
-        sourceFile="$(cd .. && pwd)/$i"
+        sourceFile="$(readlink --canonicalize "$(cd .. && pwd)/$i")"
         targetFile="$HOME/.$(printf "%s" "$i" | sed "s/.*\/\(.*\)/\1/g")"
 
         if [ ! -e "$targetFile" ] || $skipQuestions; then

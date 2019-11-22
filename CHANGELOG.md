@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Resolving symbolic links to source files before creating symbolic links to them.
+
 ## [v1.5.0] - 2019-11-20
 
 ### Added
