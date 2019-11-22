@@ -3,8 +3,6 @@
 # Source all the bash files.
 
 source_bash_files() {
-    declare -r CURRENT_DIRECTORY="$(pwd)"
-
     declare -r -a FILES_TO_SOURCE=(
         "bash_aliases"
         "bash_autocomplete"
@@ -24,8 +22,6 @@ source_bash_files() {
         [ -r "$file" ] \
             && . "$file"
     done
-
-    cd "$CURRENT_DIRECTORY"
 }
 
 source_bash_files
