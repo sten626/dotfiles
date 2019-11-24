@@ -28,8 +28,12 @@ export LC_ALL="en_US.UTF-8"
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # Custom `less` colours for `man` pages.
-export LESS_TERMCAP_md="$(tput bold 2> /dev/null; tput setaf 2 2> /dev/null)"
-export LESS_TERMCAP_me="$(tput sgr0 2> /dev/null)"
+LESS_TERMCAP_md=""
+LESS_TERMCAP_md="$(tput bold 2> /dev/null; tput setaf 2 2> /dev/null)"
+export LESS_TERMCAP_md
+LESS_TERMCAP_me=""
+LESS_TERMCAP_me="$(tput sgr0 2> /dev/null)"
+export LESS_TERMCAP_me
 
 # Don't clear the screen after quitting a `man` page.
 export MANPAGER="less -X"

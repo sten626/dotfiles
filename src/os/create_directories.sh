@@ -4,9 +4,10 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "utils.sh"
 
 create_directories() {
-    declare -r WINDOWS_USER=$(get_windows_user)
+    local windows_user=""
+    windows_user=$(get_windows_user)
     declare -a DIRECTORIES=(
-        "/mnt/c/Users/$WINDOWS_USER/workspace"
+        "/mnt/c/Users/$windows_user/workspace"
     )
 
     for i in "${DIRECTORIES[@]}"; do
@@ -15,8 +16,9 @@ create_directories() {
 }
 
 link_workspace() {
-    declare -r WINDOWS_USER=$(get_windows_user)
-    local -r SOURCE="/mnt/c/Users/$WINDOWS_USER/workspace"
+    local windows_user=""
+    windows_user=$(get_windows_user)
+    local -r SOURCE="/mnt/c/Users/$windows_user/workspace"
     local -r TARGET="$HOME/workspace"
 
     local skipQuestions=false
