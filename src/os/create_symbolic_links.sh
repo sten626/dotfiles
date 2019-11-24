@@ -17,6 +17,7 @@ create_symlinks() {
         "shell/curlrc"
         "shell/dircolors"
         "shell/inputrc"
+        "shell/shellcheckrc"
 
         "git/gitconfig"
         "git/gitignore"
