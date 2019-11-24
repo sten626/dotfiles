@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# shellcheck source=src/os/install/utils.sh
 cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "../utils.sh" \
     && . "utils.sh"

@@ -120,9 +120,11 @@ extract() {
 
 verify_os() {
     declare -r MINIMUM_UBUNTU_VERSION="16.04"
+    local os_name=""
+    local os_version=""
 
-    local os_name="$(get_os)"
-    local os_version="$(get_os_version)"
+    os_name="$(get_os)"
+    os_version="$(get_os_version)"
 
     # Check is the OS is Ubuntu and above the required version.
 

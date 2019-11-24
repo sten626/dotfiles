@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# shellcheck source=src/os/utils.sh
 cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "utils.sh"
 
@@ -17,6 +16,7 @@ create_symlinks() {
         "shell/curlrc"
         "shell/dircolors"
         "shell/inputrc"
+        "shell/shellcheckrc"
 
         "git/gitconfig"
         "git/gitignore"
