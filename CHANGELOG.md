@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added shellcheck to project and resolved warnings.
+- Adding `meld` to installed tools.
 
 ### Fixed
 
@@ -79,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixing various issues with running the setup script independantly.
+- Fixing various issues with running the setup script independently.
 
 ## [v1.0.0] - 2019-07-13
 
