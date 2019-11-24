@@ -2,19 +2,7 @@
 
 # Source all the bash files.
 
-cd_to_wsl() {
-    # WSL terminal starts you in `/mnt/c/Users/...`; Start in `~` instead.
-    local -r WINDOWS_USER="$(cmd.exe /c "echo %USERNAME%" | sed -e 's/\r//g')"
-    local -r WINDOWS_HOME="/mnt/c/Users/$WINDOWS_USER"
-
-    if [[ "$PWD" =~ $WINDOWS_HOME ]]; then
-        cd ~/${PWD#$WINDOWS_HOME}
-    fi
-}
-
 source_bash_files() {
-    declare -r CURRENT_DIRECTORY="$(pwd)"
-
     declare -r -a FILES_TO_SOURCE=(
         "bash_aliases"
         "bash_autocomplete"
@@ -34,8 +22,6 @@ source_bash_files() {
         [ -r "$file" ] \
             && . "$file"
     done
-
-    cd "$CURRENT_DIRECTORY"
 }
 
 source_bash_files
@@ -64,16 +50,12 @@ agent_load_env
 #   2 = agent not running
 agent_run_state=$(ssh-add -l >| /dev/null 2>&1; echo $?)
 
-if [ ! "$SSH_AUTH_SOCK" ] || [ $agent_run_state = 2 ]; then
+if [ ! "$SSH_AUTH_SOCK" ] || [ "$agent_run_state" = 2 ]; then
     agent_start
     ssh-add
-elif [ "$SSH_AUTH_SOCK" ] && [ $agent_run_state = 1 ]; then
+elif [ "$SSH_AUTH_SOCK" ] && [ "$agent_run_state" = 1 ]; then
     ssh-add
 fi
 
 unset agent_run_state env
 unset -f agent_load_env agent_start
-
-cd_to_wsl
-
-unset -f cd_to_wsl

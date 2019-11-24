@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.6.0] - 2019-11-24
+
+### Added
+
+- Added shellcheck to project and resolved warnings.
+- Adding `meld` to installed tools.
+
+### Fixed
+
+- Resolving symbolic links to source files before creating symbolic links to them.
+
 ## [v1.5.0] - 2019-11-20
 
 ### Added
@@ -71,13 +82,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixing various issues with running the setup script independantly.
+- Fixing various issues with running the setup script independently.
 
 ## [v1.0.0] - 2019-07-13
 
 - Initial release
 
-[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.5.0...develop
+[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.6.0...develop
+[v1.6.0]: https://github.com/sten626/dotfiles/compare/v1.5.0...v1.6.0
 [v1.5.0]: https://github.com/sten626/dotfiles/compare/v1.4.0...v1.5.0
 [v1.4.0]: https://github.com/sten626/dotfiles/compare/v1.3.1...v1.4.0
 [v1.3.1]: https://github.com/sten626/dotfiles/compare/v1.3.0...v1.3.1
