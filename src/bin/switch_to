@@ -19,6 +19,11 @@ main() {
   shift $((OPTIND-1))
   target_branch="$1"
 
+  if [[ -z ${target_branch} ]]; then
+    print_usage
+    exit 1
+  fi
+
   # Update repo.
   printf 'Updating git repo...\n\n'
   git fetch --prune --prune-tags
