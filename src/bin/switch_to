@@ -5,6 +5,7 @@ main() {
   local target_branch="$1"
 
   # Update repo.
+  printf "Updating git repo...\n\n"
   git fetch --prune --prune-tags
 
   # If input is just a number, try to match it to a branch.
@@ -28,6 +29,7 @@ main() {
   fi
 
   # If we're in a node project, run npm install.
+  printf "\nInstalling node packages...\n\n"
   if [[ -e "./package.json" ]]; then
     npm install
   fi
