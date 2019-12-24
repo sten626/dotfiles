@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `switch_to` script for easily changing branches.
+- Adding `ts-node` to installed packages.
 
 ## [v1.6.0] - 2019-11-24
 
