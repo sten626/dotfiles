@@ -1,0 +1,36 @@
+#!/bin/bash
+
+main() {
+  local rev_list_count=""
+  local target_branch="$1"
+
+  # Update repo.
+  git fetch --prune --prune-tags
+
+  # If input is just a number, try to match it to a branch.
+  if [[ "$target_branch" =~ ^[0-9]+$ ]]; then
+    target_branch="issue-${target_branch}"
+  fi
+
+  # Attempt to checkout the target branch, or return if it fails.
+  git checkout "$target_branch" || return 1
+
+  # Check if the branch is behind origin, and offer to pull.
+  rev_list_count="$(git rev-list --count --left-right "@{upstream}"...HEAD 2> /dev/null)"
+
+  if [[ ! -z "$rev_list_count" ]] && [[ $rev_list_count != 0?0 ]] && [[ $rev_list_count == *0 ]]; then
+    printf "\nBranch is behind origin. Pull? [Y/n] "
+    read -r
+
+    if [[ -z "$REPLY" ]] || [[ "$REPLY" =~ ^[Yy]$ ]]; then
+      git pull
+    fi
+  fi
+
+  # If we're in a node project, run npm install.
+  if [[ -e "./package.json" ]]; then
+    npm install
+  fi
+}
+
+main "$@"
