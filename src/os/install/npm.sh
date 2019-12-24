@@ -35,6 +35,7 @@ main() {
 
     install_npm_package "Angular CLI" "@angular/cli"
     install_npm_package "eslint" "eslint"
+    install_npm_package "ts-node" "ts-node"
     install_npm_package "tslint" "tslint"
     install_npm_package "TypeScript" "typescript"
 

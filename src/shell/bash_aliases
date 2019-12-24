@@ -9,6 +9,7 @@ alias g="git"
 alias m="man"
 alias n="npm"
 alias nu="nvm install lts/* --reinstall-packages-from=node"
+alias s="switch_to"
 alias w='cd $HOME/workspace'
 
 # apt
