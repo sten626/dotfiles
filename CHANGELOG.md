@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `switch_to` script for easily changing branches.
+
 ## [v1.6.0] - 2019-11-24
 
 ### Added
