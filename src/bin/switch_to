@@ -50,8 +50,8 @@ main() {
 
   # If we're in a node project, run npm install.
   if [[ ${SKIP_INSTALL} != 'true' ]]; then
-    printf '\nInstalling node packages...\n\n'
     if [[ -e './package.json' ]]; then
+      printf '\nInstalling node packages...\n\n'
       npm install
     fi
   fi
