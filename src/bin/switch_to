@@ -1,0 +1,73 @@
+#!/bin/bash
+
+main() {
+  local rev_list_count=''
+  local SKIP_INSTALL='false'
+  local target_branch=''
+
+  while getopts 'hs' flag; do
+    case "${flag}" in
+      h) print_usage
+         exit 0 ;;
+      s) SKIP_INSTALL='true' ;;
+      *) print_usage
+         exit 1 ;;
+    esac
+  done
+  readonly SKIP_INSTALL
+
+  shift $((OPTIND-1))
+  target_branch="$1"
+
+  if [[ -z ${target_branch} ]]; then
+    print_usage
+    exit 1
+  fi
+
+  # Update repo.
+  printf 'Updating git repo...\n\n'
+  git fetch --prune --prune-tags
+
+  # If input is just a number, try to match it to a branch.
+  if [[ "${target_branch}" =~ ^[0-9]+$ ]]; then
+    target_branch="issue-${target_branch}"
+  fi
+
+  # Attempt to checkout the target branch, or return if it fails.
+  git checkout "${target_branch}" || return 1
+
+  # Check if the branch is behind origin, and offer to pull.
+  rev_list_count="$(git rev-list --count --left-right "@{upstream}"...HEAD 2> /dev/null)"
+
+  if [[ ! -z "${rev_list_count}" ]] && [[ ${rev_list_count} != 0?0 ]] && [[ ${rev_list_count} == *0 ]]; then
+    printf '\nBranch is behind origin. Pull? [Y/n] '
+    read -r
+
+    if [[ -z "${REPLY}" ]] || [[ "${REPLY}" =~ ^[Yy]$ ]]; then
+      git pull
+    fi
+  fi
+
+  # If we're in a node project, run npm install.
+  if [[ ${SKIP_INSTALL} != 'true' ]]; then
+    if [[ -e './package.json' ]]; then
+      printf '\nInstalling node packages...\n\n'
+      npm install
+    fi
+  fi
+}
+
+print_usage() {
+  printf "usage: %s [-hs] branch_name | issue_number\n" "$(basename "$0")"
+  printf "\tUpdates your repository using 'git fetch', checks out the branch, pulls, and installs node packages.\n\n"
+  printf "\tOptions:\n"
+  printf "\t  -h\tdisplay this message and exit\n"
+  printf "\t  -s\tskip installation of node packages\n"
+  printf "\n"
+  printf "\tArguments:\n"
+  printf "\t  BRANCH_NAME\tName of the branch to checkout\n"
+  printf "\t  ISSUE_NUMBER\tIssue number for the wanted branch, will try to match\n"
+  printf "\n"
+}
+
+main "$@"
