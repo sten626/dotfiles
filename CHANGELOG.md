@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for differences between WSL and normal Ubuntu.
+
 ## [v1.7.0] - 2019-12-23
 
 ### Added
