@@ -134,6 +134,8 @@ verify_os() {
         else
             printf "Sorry, this script is intended only for Ubuntu %s+" "$MINIMUM_UBUNTU_VERSION"
         fi
+    elif [ "$os_name" == "wsl" ]; then
+      return 0
     else
         printf "Sorry, this script is intended only for Ubuntu!"
     fi
@@ -143,7 +145,7 @@ verify_os() {
 
 main() {
     # Ensure that the following actions are made relative to this file's path.
-    
+
     cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
     # Load utils
@@ -168,7 +170,7 @@ main() {
     printf "%s" "${BASH_SOURCE[0]}" | grep "setup.sh" &> /dev/null \
         || download_dotfiles
 
-    ./create_directories.sh "$@"
+    "./$(get_os)/create_directories.sh" "$@"
 
     ./create_symbolic_links.sh "$@"
 

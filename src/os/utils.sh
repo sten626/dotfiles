@@ -74,8 +74,12 @@ get_os() {
     kernelName="$(uname -s)"
 
     if [ "$kernelName" == "Linux" ] && \
-        [ -e "/etc/os-release" ]; then
-        os="$(. /etc/os-release; printf "%s" "$ID")"
+          [ -e "/etc/os-release" ]; then
+        if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
+          os="wsl"
+        else
+          os="$(. /etc/os-release; printf "%s" "$ID")"
+        fi
     else
         os="$kernelName"
     fi
