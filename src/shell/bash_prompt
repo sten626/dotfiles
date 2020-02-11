@@ -29,7 +29,7 @@ get_git_repository_details() {
     # Check if the current directory is in a Git repository.
     ! git rev-parse &> /dev/null \
         && return
-    
+
     # Check if in `.git/` directory.
     [ "$(git rev-parse --is-inside-git-dir)" == "true" ] \
         && return
@@ -113,7 +113,7 @@ set_prompts() {
 
     # PS1 - Default interactive prompt
 
-    PS1="\[\033]0;\W\007\]" # Terminal title (cwd)
+    PS1="\[\033]0;\W - Terminal\007\]" # Terminal title (cwd)
 
     PS1+="\[$reset$bold"
     PS1+="$green\]\u"        # Username
