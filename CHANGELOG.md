@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.9.0] - 2020-02-11
+
+### Added
+
+- Adding `ghost-cli` to installed packages.
+
+### Fixed
+
+- Permissions issue on `os` scripts.
+
 ## [v1.8.0] - 2020-02-10
 
 ### Added
@@ -102,7 +112,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.8.0...develop
+[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.9.0...develop
+[v1.9.0]: https://github.com/sten626/dotfiles/compare/v1.8.0...v1.9.0
 [v1.8.0]: https://github.com/sten626/dotfiles/compare/v1.7.0...v1.8.0
 [v1.7.0]: https://github.com/sten626/dotfiles/compare/v1.6.0...v1.7.0
 [v1.6.0]: https://github.com/sten626/dotfiles/compare/v1.5.0...v1.6.0
