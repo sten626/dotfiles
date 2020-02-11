@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Permissions issue on `os` scripts.
+
 ## [v1.8.0] - 2020-02-10
 
 ### Added
