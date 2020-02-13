@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Permissions on create_directories scripts.
+
 ## [v1.9.0] - 2020-02-11
 
 ### Added
