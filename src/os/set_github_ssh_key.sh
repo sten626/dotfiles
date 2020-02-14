@@ -4,31 +4,31 @@ cd "$(dirname "${BASH_SOURCE[0]}")" \
     && . "utils.sh"
 
 add_ssh_configs() {
-    printf "%s\n" \
-        "Host github.com" \
-        "  IdentityFile $1" \
-        "  LogLevel ERROR" >> ~/.ssh/config
+  printf "%s\n" \
+    "Host github.com" \
+    "  IdentityFile $1" \
+    "  LogLevel ERROR" >> ~/.ssh/config
 
-    print_result $? "Add SSH configs"
+  print_result $? "Add SSH configs"
 }
 
 copy_public_ssh_key_to_clipboard() {
-    if cmd_exists "pbcopy"; then
-        pbcopy < "$1"
-        print_result $? "Copy public SSH key to clipboard"
-    elif cmd_exists "xclip"; then
-        xclip -selection clip < "$1"
-        print_result $? "Copy public SSH key to clipboard"
-    else
-        print_warning "Please copy the public SSH key ($1) to clipboard"
-    fi
+  if cmd_exists "pbcopy"; then
+    pbcopy < "$1"
+    print_result $? "Copy public SSH key to clipboard"
+  elif cmd_exists "xclip"; then
+    xclip -selection clip < "$1"
+    print_result $? "Copy public SSH key to clipboard"
+  else
+    print_warning "Please copy the public SSH key ($1) to clipboard"
+  fi
 }
 
 generate_ssh_keys() {
-    ask "Please provide an email address: " && printf "\n"
-    ssh-keygen -t rsa -b 4096 -C "$(get_answer)" -f "$1"
+  ask "Please provide an email address: " && printf "\n"
+  ssh-keygen -t rsa -b 4096 -C "$(get_answer)" -f "$1"
 
-    print_result $? "Generate SSH keys"
+  print_result $? "Generate SSH keys"
 }
 
 open_github_ssh_page() {
@@ -44,20 +44,20 @@ open_github_ssh_page() {
 }
 
 set_github_ssh_key() {
-    local ssh_key_file_name="$HOME/.ssh/github"
+  local ssh_key_file_name="$HOME/.ssh/github"
 
-    # If the file already exists, generate a new unique file.
-    
-    if [ -f "$ssh_key_file_name" ]; then
-        ssh_key_file_name="$(mktemp -u "$HOME/.ssh/github_XXXXX")"
-    fi
+  # If the file already exists, generate a new unique file.
 
-    generate_ssh_keys "$ssh_key_file_name"
-    add_ssh_configs "$ssh_key_file_name"
-    copy_public_ssh_key_to_clipboard "${ssh_key_file_name}.pub"
-    open_github_ssh_page
-    test_ssh_connection \
-        && rm "${ssh_key_file_name}.pub"
+  if [ -f "$ssh_key_file_name" ]; then
+    ssh_key_file_name="$(mktemp -u "$HOME/.ssh/github_XXXXX")"
+  fi
+
+  generate_ssh_keys "$ssh_key_file_name"
+  add_ssh_configs "$ssh_key_file_name"
+  copy_public_ssh_key_to_clipboard "${ssh_key_file_name}.pub"
+  open_github_ssh_page
+  test_ssh_connection \
+    && rm "${ssh_key_file_name}.pub"
 }
 
 test_ssh_connection() {
