@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.9.1] - 2020-02-23
+
+### Fixed
+
+- Permissions on create_directories scripts.
+- Issues with connecting to Windows X server.
+
 ## [v1.9.0] - 2020-02-11
 
 ### Added
@@ -112,7 +119,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.9.0...develop
+[Unreleased]: https://github.com/sten626/dotfiles/compare/v1.9.1...develop
+[v1.9.1]: https://github.com/sten626/dotfiles/compare/v1.9.0...v1.9.1
 [v1.9.0]: https://github.com/sten626/dotfiles/compare/v1.8.0...v1.9.0
 [v1.8.0]: https://github.com/sten626/dotfiles/compare/v1.7.0...v1.8.0
 [v1.7.0]: https://github.com/sten626/dotfiles/compare/v1.6.0...v1.7.0

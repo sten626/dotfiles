@@ -40,3 +40,6 @@ export MANPAGER="less -X"
 
 # Version of shellcheck in Ubuntu apt doesn't support shellcheckrc yet, so add ignore flags here.
 export SHELLCHECK_OPTS="-e SC1090 -e SC1091"
+
+# DISPLAY for X11 forwarding, install XMing on Windows
+export DISPLAY='localhost:0'
