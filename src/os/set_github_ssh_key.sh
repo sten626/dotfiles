@@ -36,8 +36,6 @@ open_github_ssh_page() {
 
     if cmd_exists "xdg-open"; then
         xdg-open "$GITHUB_SSH_URL"
-    elif cmd_exists "open"; then
-        open "$GITHUB_SSH_URL"
     else
         print_warning "Please add the public SSH key to GitHub ($GITHUB_SSH_URL)"
     fi
