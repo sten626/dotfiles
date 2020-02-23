@@ -4,6 +4,12 @@ This repository contains dotfiles and configuration scripts to set up my own dev
 
 ## Setup
 
+### Windows
+
+If you're running this in WSL on Windows, you'll probably want to install an X server on Windows, e.g. Xming.
+
+### Setup Script
+
 To set up everything do either of the following.
 
 - Run the following command which should handle everything:
