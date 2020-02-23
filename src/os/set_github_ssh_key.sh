@@ -13,8 +13,8 @@ add_ssh_configs() {
 }
 
 copy_public_ssh_key_to_clipboard() {
-  if cmd_exists "pbcopy"; then
-    pbcopy < "$1"
+  if cmd_exists "clip.exe"; then
+    clip.exe < "$1"
     print_result $? "Copy public SSH key to clipboard"
   elif cmd_exists "xclip"; then
     xclip -selection clip < "$1"
