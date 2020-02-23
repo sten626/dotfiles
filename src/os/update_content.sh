@@ -7,12 +7,8 @@ main() {
   ssh -T git@github.com &> /dev/null
 
   if [ $? -ne 1 ]; then
-    ask_for_confirmation "Should this device have write access to the 'dotfiles' repository?"
-
-    if answer_is_yes; then
-      ./set_github_ssh_key.sh \
-        || return 1
-    fi
+    ./set_github_ssh_key.sh \
+      || return 1
   fi
 
   print_in_purple "\n • Update content\n\n"
