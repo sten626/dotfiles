@@ -32,13 +32,13 @@ generate_ssh_keys() {
 }
 
 open_github_ssh_page() {
-    declare -r GITHUB_SSH_URL="https://github.com/settings/ssh"
+  declare -r GITHUB_SSH_URL="https://github.com/settings/ssh"
 
-    if cmd_exists "xdg-open"; then
-        xdg-open "$GITHUB_SSH_URL"
-    else
-        print_warning "Please add the public SSH key to GitHub ($GITHUB_SSH_URL)"
-    fi
+  if cmd_exists "xdg-open"; then
+    xdg-open "$GITHUB_SSH_URL"
+  else
+    print_warning "Please add the public SSH key to GitHub ($GITHUB_SSH_URL)"
+  fi
 }
 
 set_github_ssh_key() {
@@ -59,29 +59,29 @@ set_github_ssh_key() {
 }
 
 test_ssh_connection() {
-    while true; do
-        ssh -T git@github.com &> /dev/null
-        [ $? -eq 1 ] && break
+  while true; do
+    ssh -T git@github.com &> /dev/null
+    [ $? -eq 1 ] && break
 
-        sleep 5
-    done
+    sleep 5
+  done
 }
 
 main() {
-    print_in_purple "\n • Set up GitHub SSH keys\n\n"
+  print_in_purple "\n • Set up GitHub SSH keys\n\n"
 
-    if ! is_git_repository; then
-        print_error "Not a Git repository"
-        exit 1
-    fi
+  if ! is_git_repository; then
+    print_error "Not a Git repository"
+    exit 1
+  fi
 
-    ssh -T git@github.com &> /dev/null
+  ssh -T git@github.com &> /dev/null
 
-    if [ $? -ne 1 ]; then
-        set_github_ssh_key
-    fi
+  if [ $? -ne 1 ]; then
+    set_github_ssh_key
+  fi
 
-    print_result $? "Set up GitHub SSH keys"
+  print_result $? "Set up GitHub SSH keys"
 }
 
 main
