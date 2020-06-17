@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Adding `sqlite3` to installed packages.
 
+### Fixed
+
+- Making `switch_to` script executable by default.
+
 ## [v1.9.1] - 2020-02-23
 
 ### Fixed
