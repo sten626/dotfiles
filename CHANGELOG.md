@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Adding `sqlite3` to installed packages.
+
 ## [v1.9.1] - 2020-02-23
 
 ### Fixed
