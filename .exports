@@ -1,1 +1,14 @@
 # shellcheck shell=bash
+
+# Set nano as the default text editor.
+export EDITOR=nano
+
+# Don't put duplicate lines or lines starting with space in the history.
+export HISTCONTROL=ignoreboth
+
+# For setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+export HISTSIZE=1000
+export HISTFILESIZE=2000
+
+# Set default language to US English.
+export LANG="en_US.UTF-8"
