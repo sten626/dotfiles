@@ -3,7 +3,7 @@
 # be sourced, not executed. This is because it needs to source the new
 # `.bash_profile`.
 
-function sync_files() {
+sync_files() {
   cd "$(dirname "${BASH_SOURCE[0]}")" || exit
 
   rsync \
@@ -15,26 +15,12 @@ function sync_files() {
   . "$HOME/.bash_profile"
 }
 
-function main() {
-  local force=false
+main() {
+  read -r -n 1 -p "This may overwrite existing files in your home directory. Continue? (y/n) "
+  echo
 
-  while getopts 'f' flag; do
-    case "${flag}" in
-      f) force=true ;;
-      *) usage
-         exit 1 ;;
-    esac
-  done
-
-  if [ $force = true ]; then
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
     sync_files
-  else
-    read -r -n 1 -p "This may overwrite existing files in your home directory. Continue? (y/n) "
-    echo
-
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      sync_files
-    fi
   fi
 }
 
