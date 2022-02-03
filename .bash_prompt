@@ -87,6 +87,6 @@ PS1+="\[$white\] at "
 PS1+="\[$host_style\]\h"
 PS1+="\[$white\] in "
 PS1+="\[$blue\]\w"
-PS1+="\[$white\] on \[$cyan\]$(git_details)"
+PS1+="\[$white\] on \[$cyan\]\$(git_details)"
 PS1+="\n\[$white\]\$ \[$reset\]"
 export PS1
