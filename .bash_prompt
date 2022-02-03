@@ -1,0 +1,92 @@
+# shellcheck shell=bash
+
+# set variable identifying the chroot you work in (used in the prompt below)
+# if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+#     debian_chroot=$(cat /etc/debian_chroot)
+# fi
+
+# # set a fancy prompt (non-color, unless we know we "want" color)
+# case "$TERM" in
+#   xterm-color|*-256color) color_prompt=yes;;
+# esac
+
+# if [ "$color_prompt" = yes ]; then
+#   PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+# else
+#   PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+# fi
+# unset color_prompt
+
+# # If this is an xterm set the title to user@host:dir
+# case "$TERM" in
+#   xterm*|rxvt*)
+#     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+#     ;;
+#   *)
+#     ;;
+# esac
+
+git_details() {
+  local modifier=''
+  local branch_name=''
+
+  # Bail out if not in a git repository.
+  git rev-parse --is-inside-work-tree &>/dev/null || return
+
+  # Try to get the branch name of the branch we're on.
+  branch_name="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
+    git describe --all --exact-match HEAD 2> /dev/null || \
+    git rev-parse --short HEAD 2> /dev/null || \
+    echo '(unknown)')"
+
+  # Check for uncommitted changes in the index.
+  if ! git diff --quiet --ignore-submodules --cached; then
+    modifier+='+'
+  fi
+
+  # Check for unstaged changes.
+  if ! git diff-files --quiet --ignore-submodules; then
+    modifier+='!'
+  fi
+
+  # Check for untracked files.
+  if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+    modifier+='?'
+  fi
+
+  # Check for stashed files.
+  if git rev-parse --verify refs/stash &> /dev/null; then
+    modifier+='$'
+  fi
+
+  [ -n "$modifier" ] && modifier=" [$modifier]"
+
+  echo "$branch_name$modifier"
+}
+
+tput sgr0; # reset styles
+bold=$(tput bold)
+reset=$(tput sgr0)
+black=$(tput setaf 0)
+blue=$(tput setaf 4)
+blue_bg=$(tput setab 4)
+cyan=$(tput setaf 6)
+white=$(tput setaf 7)
+
+# Highight the hostname when connected via SSH.
+if [[ "$SSH_TTY" ]]; then
+  host_style="${blue_bg}${black}";
+else
+  host_style="$cyan";
+fi
+
+# Set the terminal title and prompt.
+PS1="\[\033]0;\W\007\]"
+PS1+="\[$bold$cyan\]\u"
+PS1+="\[$white\] at "
+PS1+="\[$host_style\]\h"
+PS1+="\[$white\] in "
+PS1+="\[$blue\]\w"
+PS1+="\[$white\] on \[$cyan\]$(git_details)"
+PS1+="\n\[$white\]\$ \[$reset\]"
+export PS1
