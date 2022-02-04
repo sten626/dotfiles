@@ -51,3 +51,25 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# Load the SSH agent so you don't need to enter the passphrase constantly.
+agent_env=~/.ssh/agent.env
+if [ -f "$agent_env" ]; then
+  # shellcheck disable=SC1090
+  . "$agent_env" > /dev/null
+fi
+# agent_run_state:
+#   0 = agent running w/ key
+#   1 = agent running w/o ley
+#   2 = agent not running
+agent_run_state=$(ssh-add -l > /dev/null 2>&1; echo $?)
+if [ ! "$SSH_AUTH_SOCK" ] || [ "$agent_run_state" = 2 ]; then
+  (umask 077; ssh-agent >| "$agent_env")
+  # shellcheck disable=SC1090
+  . "$agent_env" > /dev/null
+  ssh-add
+elif [ "$SSH_AUTH_SOCK" ] && [ "$agent_run_state" = 1 ]; then
+  ssh-add
+fi
+
+unset agent_env agent_run_state
