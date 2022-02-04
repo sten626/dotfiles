@@ -1,0 +1,26 @@
+# shellcheck shell=bash
+
+# Make a new directory and move into it.
+mkd() {
+  mkdir -p "$@" && cd "$_" || return 1
+}
+
+# Call `open` with the given args, or on pwd if none given.
+o() {
+  if [ $# -eq 0 ]; then
+    open .
+  else
+    open "$@"
+  fi
+}
+
+
+# Archive and compress a file or directory
+targz() {
+  local output="${*%/}.tar.gz"
+  tar -cvzf "$output" "$@"
+  local zipped_size=""
+  zipped_size=$(stat -c %s "$output")
+
+  echo "$output ($((zipped_size / 1000)) kB) created successfully."
+}

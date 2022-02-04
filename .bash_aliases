@@ -31,6 +31,9 @@ alias w='cd $HOME/workspace'
 # Apt
 alias apti="sudo apt install"
 
+# WSL
+alias open="explorer.exe"
+
 # Update node to newest LTS version
 alias nu="nvm install lts/* --reinstall-packages-from=node"
 
