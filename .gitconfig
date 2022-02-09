@@ -1,9 +1,67 @@
 [alias]
+
+  # Simple aliases.
+  br = branch
+  c = clone
+  ci = commit
+  co = checkout
+  cp = cherry-pick
+  d = diff
+  f = fetch
+  m = merge
+  p = push
+  r = rebase
+
+  # Bisect shortcuts.
+  bb = bisect bad
+  bi = bisect
+  bg = bisect good
+  bre = bisect reset
+  bs = bisect skip
+
+  # "Pluralize" various listing commands.
+  branches = branch --all
+  remotes = remote --verbose
+  tags = tag --list
+
+  # List aliases.
+  aliases = config --get-regexp alias
+
+  # Commit all changes.
+  ca = !git add --all && git commit --all --verbose
+
+  # `git di N` shows the diff between N revisions ago and now.
+  di = "!d() { git diff HEAD~$1; }; d"
+
+  # Delete merged branches that are no longer needed.
+  dm = "!git branch --merged | grep --invert-match '\\*' | xargs --max-args 1 git branch --delete"
+
+  # Find branches containing commit.
+  fb = branch --all --contains
+
+  # Find tags containing commit.
+  ft = describe --always --contains
+
   # View abbreviated SHA, description, and history graph of the latest 20 commits.
 	l = log --pretty=oneline --max-count=20 --graph --abbrev-commit
 
+  # Interactive rebase with N commits.
+  reb = "!r() { git rebase --interactive HEAD~$1; }; r"
+
   # View the current working tree status using the short format.
 	s = status --short
+
+[apply]
+
+  # Detect whitespace errors when applying a patch.
+  whitespace = fix
+
+[push]
+
+  # Make `push` push relevant tags when pushing branches.
+  followTags = true
+
 [user]
+
   email = steven.indzeoski@gmail.com
-  name = Steven indzeoski
+  name = Steven Indzeoski
