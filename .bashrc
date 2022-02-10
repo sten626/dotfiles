@@ -5,20 +5,22 @@
 
 # If not running interactively, don't do anything
 case $- in
-    *i*) ;;
-      *) return;;
+  *i*) ;;
+  *) return;;
 esac
 
-# append to the history file, don't overwrite it
-shopt -s histappend
+# Auto correct minor spelling errors when using `cd`.
+shopt -s cdspell
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# Match filenames in a case-insensitive fasion when performing filename exansion.
+shopt -s nocaseglob
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -28,8 +30,6 @@ if [ -f ~/.bash_prompt ]; then
   . ~/.bash_prompt
 fi
 
-# colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
