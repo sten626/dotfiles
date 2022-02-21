@@ -14,6 +14,44 @@ ask_for_sudo() {
   done &> /dev/null &
 }
 
+execute() {
+  local -r cmd="$1"
+  local -r msg="${2-$1}"
+  local -r frames='/-\|'
+  local -r n_frames=${#frames}
+  local -r tmpFile="$(mktemp /tmp/XXXXX)"
+
+  # Create handler for killing subprocesses on exit if we don't already have one.
+  trap -p EXIT | grep kill_all_subprocesses &> /dev/null \
+    || trap kill_all_subprocesses EXIT
+
+  eval "$cmd" > /dev/null 2> "$tmpFile" &
+  local cmdPid=$!
+  local i=0
+  local frameText=""
+
+  while kill -0 "$cmdPid" &> /dev/null; do
+    frameText="   [${frames:i++%n_frames:1}] $msg"
+    printf "%s" "$frameText"
+    sleep 0.2
+    printf "\r"
+  done
+
+  wait "$cmdPid" &> /dev/null
+  local exitCode=$?
+
+  if [ "$exitCode" -eq 0 ]; then
+    print_success "$msg"
+  else
+    print_error "$msg"
+    print_error_stream < "$tmpFile"
+  fi
+
+  rm -rf "$tmpFile"
+
+  return $exitCode
+}
+
 get_os() {
   local os=""
   local kernelName=""
@@ -33,20 +71,31 @@ get_os() {
   echo "$os"
 }
 
+kill_all_subprocesses() {
+  local pid=""
+
+  for pid in $(jobs -p); do
+    kill "$pid"
+    wait "$pid" &> /dev/null
+  done
+}
+
 link_file() {
-  local src=$1 dst=$2
+  local -r src=$1
+  local -r dst=$2
   local backup=false
   local overwrite=false
   local skip=false
 
   if [ -e "$dst" ]; then
-    if [ "$backup_all" == false ] && [ "$overwrite_all" == false ] && [ "$skip_all" == false ]; then
-      if [ "$src" == "$(readlink $dst)" ]; then
+    if ! $backup_all && ! $overwrite_all && ! $skip_all; then
+      if [ "$src" == "$(readlink "$dst")" ]; then
         skip=true
       else
         print_question "File already exists: $dst ($(basename "$src")), what do you want to do?
        [b]ackup, [B]ackup all, [o]verwrite, [O]verwrite all, [s]kip, [S]kip all? "
         read -n 1 -r action
+        printf "\n"
 
         case "$action" in
           b) backup=true;;
@@ -60,14 +109,32 @@ link_file() {
       fi
     fi
 
-    backup=${backup-$backup_all}
-    overwrite=${overwrite-$overwrite_all}
-    skip=${skip-$skip_all}
-
-    if [ "$overwrite" == true ]; then
-      rm -rf "$dst"
+    if $backup || $backup_all; then
+      backup="$dst.backup"
+      # mv "$dst" "$backup"
+      print_success "Moved $dst to $backup"
+    elif $overwrite || $overwrite_all; then
+      # rm -rf "$dst"
+      print_success "Removed $dst"
+    elif $skip || $skip_all; then
+      print_success "Skipped $src"
     fi
   fi
+
+  if ! $skip && ! $skip_all; then
+    # ln --symbolic "$src" "$dst"
+    print_success "Linked $dst → $src"
+  fi
+}
+
+print_error() {
+  print_in_red "   [✖] $1\n"
+}
+
+print_error_stream() {
+  while read -r line; do
+    print_error "↳ ERROR: $line"
+  done
 }
 
 print_in_colour() {
@@ -78,12 +145,24 @@ print_in_cyan() {
   print_in_colour "$1" 6
 }
 
+print_in_green() {
+  print_in_colour "$1" 2
+}
+
+print_in_red() {
+  print_in_colour "$1" 1
+}
+
 print_in_yellow() {
   print_in_colour "$1" 3
 }
 
 print_question() {
   print_in_yellow "   [?] $1"
+}
+
+print_success() {
+  print_in_green "   [✔] $1\n"
 }
 
 symlink_dotfiles() {
