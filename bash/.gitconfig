@@ -56,6 +56,10 @@
   # Detect whitespace errors when applying a patch.
   whitespace = fix
 
+[core]
+
+  excludesfile = ~/.gitignore
+
 [push]
 
   # Make `push` push relevant tags when pushing branches.
@@ -63,5 +67,10 @@
 
 [user]
 
-  email = steven.indzeoski@gmail.com
-  name = Steven Indzeoski
+  # email = steven.indzeoski@gmail.com
+  # name = Steven Indzeoski
+  useConfigOnly = true
+
+[include]
+  # Include any local configuration.
+  path = ~/.gitconfig.local

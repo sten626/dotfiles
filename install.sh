@@ -65,6 +65,7 @@ link_file() {
   local -r src=$1
   local -r dst=$2
   local backup=false
+  local name=false
   local overwrite=false
   local skip=false
 
@@ -74,13 +75,14 @@ link_file() {
         skip=true
       else
         print_question "File already exists: $dst ($(basename "$src")), what do you want to do?
-       [b]ackup, [B]ackup all, [o]verwrite, [O]verwrite all, [s]kip, [S]kip all? "
+       [b]ackup, [B]ackup all, [n]ame, [o]verwrite, [O]verwrite all, [s]kip, [S]kip all? "
         read -n 1 -r action
         printf "\n"
 
         case "$action" in
           b) backup=true;;
           B) backup_all=true;;
+          n) name=true;;
           o) overwrite=true;;
           O) overwrite_all=true;;
           s) skip=true;;
@@ -95,6 +97,11 @@ link_file() {
       execute \
         "mv $dst $backup" \
         "Backup $dst to $backup"
+    elif $name; then
+      print_question "New filename to give $(basename "$dst"): "
+      read -r
+      skip=true
+      link_file "$src" "$HOME/$REPLY"
     elif $overwrite || $overwrite_all; then
       execute \
         "rm -rf $dst" \
@@ -106,7 +113,7 @@ link_file() {
 
   if ! $skip && ! $skip_all; then
     execute \
-      "ln --symbolic $src $dst" \
+      "ln --force --symbolic $src $dst" \
       "$dst → $src"
   fi
 }
@@ -160,7 +167,7 @@ main() {
   verify_os "$force" || exit 1
   ask_for_sudo
   symlink_dotfiles
-  install_packages
+  # install_packages
 }
 
 main "$@"
