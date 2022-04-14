@@ -38,6 +38,26 @@ execute() {
   return $exitCode
 }
 
+get_os() {
+  local os=""
+  local kernelName=""
+
+  kernelName="$(uname -s)"
+
+  if [ "$kernelName" == "Linux" ] && [ -e "/etc/os-release" ]; then
+    # if grep --extended-regexp --ignore-case --quiet "(microsoft|wsl)" /proc/version &> /dev/null; then
+    #   os="wsl"
+    # else
+    #   os="$(. /etc/os-release; echo "$ID")"
+    # fi
+    os="$(. /etc/os-release; echo "$ID")"
+  else
+    os="$kernelName"
+  fi
+
+  echo "$os"
+}
+
 kill_all_subprocesses() {
   local pid=""
 
