@@ -31,11 +31,17 @@ alias w='cd $HOME/workspace'
 # Apt
 alias apti="sudo apt install"
 
+# Kill
+alias k9="kill -9"
+
 # WSL
 alias open="explorer.exe"
 
 # Update node to newest LTS version
 alias nu="nvm install lts/* --reinstall-packages-from=node"
+
+# PyCharm launcher script to the background.
+alias pc="charm &> /dev/null &"
 
 # Install updates from apt and npm
 alias u="sudo apt update \
