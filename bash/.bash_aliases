@@ -1,12 +1,14 @@
 # shellcheck shell=bash
 
 # Navigation
+
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
 # Enable color support of ls and also add handy aliases
+
 if [ -x /usr/bin/dircolors ]; then
   # shellcheck disable=SC2015
   test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -17,11 +19,13 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # Some more ls aliases
+
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
 # Shortcuts
+
 alias c='clear'
 alias g='git'
 alias m='man'
@@ -29,21 +33,24 @@ alias n='npm'
 alias w='cd $HOME/workspace'
 
 # Apt
+
 alias apti="sudo apt install"
 
 # Kill
+
+alias k="kill"
 alias k9="kill -9"
 
 # WSL
+
 alias open="explorer.exe"
 
 # Update node to newest LTS version
+
 alias nu="nvm install lts/* --reinstall-packages-from=node"
 
-# PyCharm launcher script to the background.
-alias pc="charm &> /dev/null &"
-
 # Install updates from apt and npm
+
 alias u="sudo apt update \
             && sudo apt upgrade \
             && npm install --global npm \
