@@ -2,10 +2,10 @@
 
 # Navigation
 
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
 
 # Enable color support of ls and also add handy aliases
 
@@ -34,24 +34,25 @@ alias w='cd $HOME/workspace'
 
 # Apt
 
-alias apti="sudo apt install"
+alias apti='sudo apt install'
 
 # Kill
 
-alias k="kill"
-alias k9="kill -9"
+alias k='kill'
+alias k9='kill -9'
+alias ku1='kill -USR1'
 
 # WSL
 
-alias open="explorer.exe"
+alias open='explorer.exe'
 
 # Update node to newest LTS version
 
-alias nu="nvm install lts/* --reinstall-packages-from=node"
+alias nu='nvm install lts/* --reinstall-packages-from=node'
 
 # Install updates from apt and npm
 
-alias u="sudo apt update \
+alias u='sudo apt update \
             && sudo apt upgrade \
             && npm install --global npm \
-            && npm upgrade --global"
+            && npm upgrade --global'

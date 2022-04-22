@@ -17,7 +17,7 @@ install_package() {
 
 update() {
   execute \
-    "sudo yum update" \
+    "sudo yum update --quiet" \
     "yum (update)"
 }
 
