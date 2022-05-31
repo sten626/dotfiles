@@ -14,7 +14,6 @@ o() {
   fi
 }
 
-
 # Archive and compress a file or directory
 targz() {
   local output="${*%/}.tar.gz"
@@ -23,4 +22,14 @@ targz() {
   zipped_size=$(stat -c %s "$output")
 
   echo "$output ($((zipped_size / 1000)) kB) created successfully."
+}
+
+untargz() {
+  local dst=""
+
+  if [ $# -gt 1 ]; then
+    dst="-C $2"
+  fi
+
+  tar -xvf "$1" "$dst"
 }
