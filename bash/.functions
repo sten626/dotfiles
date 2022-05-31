@@ -14,6 +14,14 @@ o() {
   fi
 }
 
+# Recursively replace all instances of a string in all files in PWD with another string.
+replace_all() {
+  local -r old="$1"
+  local -r new="$2"
+
+  grep --files-with-matches --recursive "$old" --exclude-dir=.git | xargs sed --in-place "s|$old|$new|g"
+}
+
 # Archive and compress a file or directory
 targz() {
   local output="${*%/}.tar.gz"
@@ -25,11 +33,9 @@ targz() {
 }
 
 untargz() {
-  local dst=""
-
-  if [ $# -gt 1 ]; then
-    dst="-C $2"
+  if [ $# -lt 2 ]; then
+    tar -xvf "$1"
+  else
+    tar -xvf "$1" -C "$2"
   fi
-
-  tar -xvf "$1" "$dst"
 }

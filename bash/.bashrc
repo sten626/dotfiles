@@ -10,6 +10,13 @@ case $- in
   *) return;;
 esac
 
+# Source exports to setup variables and path.
+
+if [ -f "$HOME/.exports" ]; then
+  # shellcheck source=.exports
+  . "$HOME/.exports"
+fi
+
 # Auto correct minor spelling errors when using `cd`.
 shopt -s cdspell
 
@@ -26,26 +33,23 @@ shopt -s nocaseglob
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-if [ -f ~/.bash_prompt ]; then
+if [ -f "$HOME/.bash_prompt" ]; then
   # shellcheck source=.bash_prompt
-  . ~/.bash_prompt
+  . "$HOME/.bash_prompt"
 fi
 
-
 # Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if [ -f ~/.bash_aliases ]; then
+if [ -f "$HOME/.bash_aliases" ]; then
   # shellcheck source=.bash_aliases
-  . ~/.bash_aliases
+  . "$HOME/.bash_aliases"
 fi
 
 # Function definitions.
-if [ -f ~/.functions ]; then
+
+if [ -f "$HOME/.functions" ]; then
   # shellcheck source=.functions
-  . ~/.functions
+  . "$HOME/.functions"
 fi
 
 # enable programmable completion features (you don't need to enable
@@ -60,7 +64,7 @@ if ! shopt -oq posix; then
 fi
 
 # Load the SSH agent so you don't need to enter the passphrase constantly.
-agent_env=~/.ssh/agent.env
+agent_env="$HOME/.ssh/agent.env"
 if [ -f "$agent_env" ]; then
   # shellcheck disable=SC1090
   . "$agent_env" > /dev/null
@@ -85,4 +89,6 @@ unset agent_env agent_run_state
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # shellcheck disable=SC1090
-[ -f ~/.bash.local ] && . ~/.bash.local
+if [ -f "$HOME/.bash.local" ]; then
+  . "$HOME/.bash.local"
+fi

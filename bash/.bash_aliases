@@ -32,10 +32,6 @@ alias m='man'
 alias n='npm'
 alias w='cd $HOME/workspace'
 
-# Apt
-
-alias apti='sudo apt install'
-
 # Kill
 
 alias k='kill'
@@ -43,17 +39,19 @@ alias k9='kill -9'
 alias ku1='kill -USR1'
 
 # WSL
-if [ "$(uname --kernel-name)" == "Linux" ] && grep --ignore-case --quiet microsoft /proc/version &> /dev/null; then
+
+if [ -n "$WSL" ]; then
   alias open='explorer.exe'
 fi
 
-# Update node to newest LTS version
+# Enable any OS specific aliases
 
-alias nu='nvm install lts/* --reinstall-packages-from=node'
+bash_dir="$(dirname "$(readlink "${BASH_SOURCE[0]}")")"
+os_aliases_file="$bash_dir/$OS/.bash_aliases"
 
-# Install updates from apt and npm
+if [ -f "$os_aliases_file" ]; then
+  # shellcheck disable=SC1090
+  . "$os_aliases_file"
+fi
 
-alias u='sudo apt update \
-            && sudo apt upgrade \
-            && npm install --location=global npm \
-            && npm upgrade --location=global'
+unset bash_dir os_aliases_file
