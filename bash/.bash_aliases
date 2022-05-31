@@ -43,7 +43,7 @@ alias k9='kill -9'
 alias ku1='kill -USR1'
 
 # WSL
-if [ "$(uname --kernal-name)" == "Linux" ] && grep --ignore-case --quiet microsoft /proc/version &> /dev/null; then
+if [ "$(uname --kernel-name)" == "Linux" ] && grep --ignore-case --quiet microsoft /proc/version &> /dev/null; then
   alias open='explorer.exe'
 fi
 
