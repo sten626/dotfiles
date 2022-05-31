@@ -40,6 +40,25 @@ git_details() {
     modifier+='$'
   fi
 
+  # Check if ahead/behind upstream.
+  count="$(git rev-list --count --left-right "@{upstream}"...HEAD 2> /dev/null)"
+
+  if [ -n "$count" ]; then
+    if [[ $count == 0?0 ]]; then
+      # Equal to upstream.
+      modifier="$modifier="
+    elif [[ $count == 0* ]]; then
+      # Ahead of upstream.
+      modifier="$modifier>"
+    elif [[ $count == *0 ]]; then
+      # Behind upstream.
+      modifier="$modifier<"
+    else
+      # Diverged from upstream
+      modifier="$modifier<>"
+    fi
+  fi
+
   [ -n "$modifier" ] && modifier=" [$modifier]"
 
   echo -e "${1}${branch_name}${2}${modifier}"
