@@ -30,3 +30,8 @@ export NVM_DIR="$HOME/.nvm"
 
 # Set timezone to Regina to show correct time no matter what machine I'm logged into.
 export TZ="America/Regina"
+
+# Set CHROME_BIN to the default Windows Chrome location.
+# For Karma/Jasmine.
+# TODO: Limit to WSL.
+export CHROME_BIN="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
