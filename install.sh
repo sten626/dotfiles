@@ -14,24 +14,11 @@ ask_for_sudo() {
   done &> /dev/null &
 }
 
-# install_packages() {
-#   # print_in_cyan "\n • Install packages\n\n"
-#   # export DEBIAN_FRONTEND="noninteractive"
-#   # execute "sudo apt-get update -qq" "apt (update)"
-#   # execute "sudo apt-get upgrade -qq" "apt (upgrade)"
-#   ./installs/nvm.sh
-#   install_package "build-essential"
-#   install_package "curl"
-#   # execute \
-#   #   "curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -" \
-#   #   "Add nodesource repo"
-#   # install_package "nodejs"
-# }
-
 link_file() {
   local -r src=$1
   local -r dst=$2
   local backup=false
+  local name=false
   local overwrite=false
   local skip=false
 
@@ -41,13 +28,14 @@ link_file() {
         skip=true
       else
         print_question "File already exists: $dst ($(basename "$src")), what do you want to do?
-       [b]ackup, [B]ackup all, [o]verwrite, [O]verwrite all, [s]kip, [S]kip all? "
+       [b]ackup, [B]ackup all, [n]ame, [o]verwrite, [O]verwrite all, [s]kip, [S]kip all? "
         read -n 1 -r action
         printf "\n"
 
         case "$action" in
           b) backup=true;;
           B) backup_all=true;;
+          n) name=true;;
           o) overwrite=true;;
           O) overwrite_all=true;;
           s) skip=true;;
@@ -62,6 +50,11 @@ link_file() {
       execute \
         "mv $dst $backup" \
         "Backup $dst to $backup"
+    elif $name; then
+      print_question "New filename to give $(basename "$dst"): "
+      read -r
+      skip=true
+      link_file "$src" "$HOME/$REPLY"
     elif $overwrite || $overwrite_all; then
       execute \
         "rm -rf $dst" \
@@ -73,7 +66,7 @@ link_file() {
 
   if ! $skip && ! $skip_all; then
     execute \
-      "ln --symbolic $src $dst" \
+      "ln --force --symbolic $src $dst" \
       "$dst → $src"
   fi
 }
@@ -103,12 +96,11 @@ verify_os() {
 
   os="$(get_os)"
 
-  if [ "$os" == "ubuntu" ]; then
+  if [[ $os == @(ubuntu|centos) ]]; then
     return 0
-  else
-    echo "This script is currently only tested with Ubuntu. Use the -f option to run anyway."
   fi
 
+  printf "This script is currently only tested with ubuntu and centos. Use the -f option to run anyway.\n"
   return 1
 }
 
