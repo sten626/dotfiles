@@ -13,6 +13,13 @@ git_details() {
     git rev-parse --short HEAD 2> /dev/null || \
     echo '(unknown)')"
 
+  # Disable detailed info on NFS mounts until I find a better solution.
+  # Having a super slow to load prompt is brutle.
+  if [[ $(mount_type) == nfs ]]; then
+    printf "%s%s" "$1" "$branch_name"
+    return
+  fi
+
   # Check for uncommitted changes in the index.
   if ! git diff --quiet --ignore-submodules --cached; then
     modifier+='+'
@@ -36,6 +43,10 @@ git_details() {
   [ -n "$modifier" ] && modifier=" [$modifier]"
 
   echo -e "${1}${branch_name}${2}${modifier}"
+}
+
+mount_type() {
+  df --portability --print-type . | tail --lines=+2 | awk '{print $2}'
 }
 
 set_prompts() {
@@ -71,7 +82,7 @@ set_prompts() {
   PS1+="\[$bold$cyan\]\u"
   PS1+="\[$white\] at "
   PS1+="\[$host_style\]\h"
-  PS1+="\[$white\] in "
+  PS1+="\[$reset$bold$white\] in "
   PS1+="\[$blue\]\w"
   PS1+="\$(git_details \"\[$white\] on \[$blue\]\" \"\[$magenta\]\")"
   PS1+="\n\[$white\]\$ \[$reset\]"

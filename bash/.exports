@@ -14,16 +14,25 @@ export HISTFILESIZE=2000
 export LANG="en_US.UTF-8"
 
 # Set OS related variables.
-kernelName="$(uname --kernel-name)"
+# Some code duplication from util functions but I don't want to import all that into my shell.
+kernel_name="$(uname --kernel-name)"
 
-if [ "$kernelName" == "Linux" ] && [ -e /etc/os-release ]; then
-  os="$(. /etc/os-release; echo "$ID")"
+if [ "$kernel_name" == "Linux" ] && [ -e /etc/os-release ]; then
+  OS="$(. /etc/os-release; echo "$ID")"
+
+  if grep --extended-regexp --ignore-case --quiet "(microsoft|wsl)" /proc/version &> /dev/null; then
+    export WSL=true
+
+    # Set CHROME_BIN to the default Windows Chrome location.
+    # For Karma/Jasmine.
+    export CHROME_BIN="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+  fi
 else
-  os="$kernelName"
+  OS="$kernel_name"
 fi
 
-export os
-unset kernelName
+export OS
+unset kernel_name
 
 # Set nvm bin.
 export NVM_DIR="$HOME/.nvm"
@@ -31,7 +40,12 @@ export NVM_DIR="$HOME/.nvm"
 # Set timezone to Regina to show correct time no matter what machine I'm logged into.
 export TZ="America/Regina"
 
-# Set CHROME_BIN to the default Windows Chrome location.
-# For Karma/Jasmine.
-# TODO: Limit to WSL.
-export CHROME_BIN="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+  export PATH="$HOME/bin:$PATH"
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
