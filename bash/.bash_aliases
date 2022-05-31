@@ -32,7 +32,9 @@ alias w='cd $HOME/workspace'
 alias apti="sudo apt install"
 
 # WSL
-alias open="explorer.exe"
+if [ "$(uname --kernal-name)" == "Linux" ] && grep --ignore-case --quiet microsoft /proc/version &> /dev/null; then
+  alias open="explorer.exe"
+fi
 
 # Update node to newest LTS version
 alias nu="nvm install lts/* --reinstall-packages-from=node"

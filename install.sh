@@ -14,52 +14,19 @@ ask_for_sudo() {
   done &> /dev/null &
 }
 
-get_os() {
-  local os=""
-  local kernelName=""
-
-  kernelName="$(uname -s)"
-
-  if [ "$kernelName" == "Linux" ] && [ -e "/etc/os-release" ]; then
-    if grep --extended-regexp --ignore-case --quiet "(microsoft|wsl)" /proc/version &> /dev/null; then
-      os="wsl"
-    else
-      os="$(. /etc/os-release; echo "$ID")"
-    fi
-  else
-    os="$kernelName"
-  fi
-
-  echo "$os"
-}
-
-install_package() {
-  local -r package=$1
-
-  # Check if already installed.
-  if dpkg --status "$package" &> /dev/null; then
-    print_success "$package"
-    return 0
-  fi
-
-  execute \
-    "sudo apt-get install --quiet $package" \
-    "$package"
-}
-
-install_packages() {
-  print_in_cyan "\n • Install packages\n\n"
-  export DEBIAN_FRONTEND="noninteractive"
-  execute "sudo apt-get update -qq" "apt (update)"
-  execute "sudo apt-get upgrade -qq" "apt (upgrade)"
-  ./installs/nvm.sh
-  install_package "build-essential"
-  install_package "curl"
-  # execute \
-  #   "curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -" \
-  #   "Add nodesource repo"
-  # install_package "nodejs"
-}
+# install_packages() {
+#   # print_in_cyan "\n • Install packages\n\n"
+#   # export DEBIAN_FRONTEND="noninteractive"
+#   # execute "sudo apt-get update -qq" "apt (update)"
+#   # execute "sudo apt-get upgrade -qq" "apt (upgrade)"
+#   ./installs/nvm.sh
+#   install_package "build-essential"
+#   install_package "curl"
+#   # execute \
+#   #   "curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -" \
+#   #   "Add nodesource repo"
+#   # install_package "nodejs"
+# }
 
 link_file() {
   local -r src=$1
@@ -136,10 +103,10 @@ verify_os() {
 
   os="$(get_os)"
 
-  if [ "$os" == "wsl" ]; then
+  if [ "$os" == "ubuntu" ]; then
     return 0
   else
-    echo "This script is currently only tested with WSL. Use the -f option to run anyway."
+    echo "This script is currently only tested with Ubuntu. Use the -f option to run anyway."
   fi
 
   return 1
@@ -160,7 +127,7 @@ main() {
   verify_os "$force" || exit 1
   ask_for_sudo
   symlink_dotfiles
-  install_packages
+  ./installs/main.sh
 }
 
 main "$@"
