@@ -42,7 +42,7 @@ get_os() {
   local os=""
   local kernelName=""
 
-  kernelName="$(uname --kernal-name)"
+  kernelName="$(uname --kernel-name)"
 
   if [ "$kernelName" == "Linux" ] && [ -e "/etc/os-release" ]; then
     os="$(. /etc/os-release; echo "$ID")"
