@@ -12,5 +12,5 @@ alias nu='nvm install lts/* --reinstall-packages-from=node'
 
 alias u='sudo apt update \
             && sudo apt upgrade \
-            && npm install --global npm \
-            && npm upgrade --global'
+            && npm install --location=global npm \
+            && npm upgrade --location=global'
