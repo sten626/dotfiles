@@ -56,9 +56,24 @@
   # Detect whitespace errors when applying a patch.
   whitespace = fix
 
+[commit]
+
+  # Show diff while committing.
+  verbose = true
+
 [core]
 
   excludesfile = ~/.gitignore
+
+[include]
+
+  # Include any local configuration.
+  path = ~/.gitconfig.local
+
+[pull]
+
+  # Rebase the current branch on top of upstream.
+	rebase = true
 
 [push]
 
@@ -67,10 +82,4 @@
 
 [user]
 
-  # email = steven.indzeoski@gmail.com
-  # name = Steven Indzeoski
   useConfigOnly = true
-
-[include]
-  # Include any local configuration.
-  path = ~/.gitconfig.local
