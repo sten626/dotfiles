@@ -13,13 +13,6 @@ git_details() {
     git rev-parse --short HEAD 2> /dev/null || \
     echo '(unknown)')"
 
-  # Disable detailed info on NFS mounts until I find a better solution.
-  # Having a super slow to load prompt is brutle.
-  if [[ $(mount_type) == nfs ]]; then
-    printf "%s%s" "$1" "$branch_name"
-    return
-  fi
-
   # Check for uncommitted changes in the index.
   if ! git diff --quiet --ignore-submodules --cached; then
     modifier+='+'
@@ -30,9 +23,11 @@ git_details() {
     modifier+='!'
   fi
 
-  # Check for untracked files.
-  if [ -n "$(git ls-files --others --exclude-standard)" ]; then
-    modifier+='?'
+  # Check for untracked files, disable if NFS.
+  if [[ $(mount_type) != nfs ]]; then
+    if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+      modifier+='?'
+    fi
   fi
 
   # Check for stashed files.
