@@ -18,6 +18,7 @@
   bg = bisect good
   bre = bisect reset
   bs = bisect skip
+  bv = !git bisect visualize &
 
   # "Pluralize" various listing commands.
   branches = branch --all
