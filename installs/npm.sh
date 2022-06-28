@@ -12,6 +12,7 @@ main() {
   install_npm_package "npm"
   install_npm_package "@angular/cli"
   install_npm_package "eslint"
+  install_npm_package "sass"
   install_npm_package "typescript"
 }
 
