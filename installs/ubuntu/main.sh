@@ -21,7 +21,7 @@ main() {
   upgrade
   install_package "build-essential"
   install_package "git"
-  ../nvm.sh
+  ./nvm.sh
   ./misc.sh
   ../npm.sh
 }
