@@ -29,7 +29,10 @@
   aliases = config --get-regexp alias
 
   # Commit all changes.
-  ca = !git add --all && git commit --all --verbose
+  ca = !git add --all && git commit --all
+
+  # Clean
+  cl = clean -fdx -e .idea
 
   # `git di N` shows the diff between N revisions ago and now.
   di = "!d() { git diff HEAD~$1; }; d"

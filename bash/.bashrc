@@ -10,6 +10,10 @@ case $- in
   *) return;;
 esac
 
+# Bring in my main scripting utility functions.
+
+. "$(dirname "$(readlink "${BASH_SOURCE[0]}")")/../utils.sh"
+
 # Source exports to setup variables and path.
 
 if [ -f "$HOME/.exports" ]; then

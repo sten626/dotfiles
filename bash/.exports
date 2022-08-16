@@ -14,25 +14,13 @@ export HISTFILESIZE=2000
 export LANG="en_US.UTF-8"
 
 # Set OS related variables.
-# Some code duplication from util functions but I don't want to import all that into my shell.
-kernel_name="$(uname --kernel-name)"
-
-if [ "$kernel_name" == "Linux" ] && [ -e /etc/os-release ]; then
-  OS="$(. /etc/os-release; echo "$ID")"
-
-  if grep --extended-regexp --ignore-case --quiet "(microsoft|wsl)" /proc/version &> /dev/null; then
-    export WSL=true
-
-    # Set CHROME_BIN to the default Windows Chrome location.
-    # For Karma/Jasmine.
-    export CHROME_BIN="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
-  fi
-else
-  OS="$kernel_name"
-fi
-
+OS="$(get_os)"
 export OS
-unset kernel_name
+
+if is_wsl; then
+  export WSL=true
+  export CHROME_BIN="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+fi
 
 # Set nvm bin.
 export NVM_DIR="$HOME/.nvm"
