@@ -14,6 +14,28 @@ ask_for_sudo() {
   done &> /dev/null &
 }
 
+create_bash_local() {
+  local -r file_path="$HOME/.bash.local"
+
+  if [ ! -e "$file_path" ] || [ -z "$file_path" ]; then
+    bin_dir="$(dirname "$(pwd)")/bin"
+
+    printf "%s\n" \
+"#!/bin/bash
+
+### Set PATH additions.
+
+# Scripts from dotfiles repo.
+
+PATH=\"$bin_dir:\$PATH\"
+
+export PATH
+" >> "$file_path"
+
+    print_result $? "$file_path"
+  fi
+}
+
 link_file() {
   local -r src=$1
   local -r dst=$2
@@ -119,6 +141,7 @@ main() {
   verify_os "$force" || exit 1
   ask_for_sudo
   symlink_dotfiles
+  create_bash_local
   ./installs/main.sh
 }
 
