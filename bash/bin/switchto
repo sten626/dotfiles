@@ -49,6 +49,9 @@ main() {
       printf "\nCouldn't find a valid branch for '%s'.\n" "$target_branch" >&2
       return 1
     fi
+  elif ! branchexists "$target_branch"; then
+    printf "\nCouldn't find branch '%s'.\n" "$target_branch" >&2
+    return 1
   fi
 
   # Attempt to checkout the target branch, or return if it fails.
