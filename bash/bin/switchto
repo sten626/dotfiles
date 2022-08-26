@@ -1,15 +1,18 @@
 #!/bin/bash
 
 main() {
+
+  # Parse options and arguments
+
   local skip_install=false
 
   while getopts 'hs' flag; do
     case "$flag" in
       h) print_usage
-         exit 0 ;;
+         return 0 ;;
       s) skip_install=true ;;
       *) print_usage
-         exit 1 ;;
+         return 1 ;;
     esac
   done
 
@@ -18,8 +21,14 @@ main() {
 
   if [[ -z $target_branch ]]; then
     print_usage
-    exit 1
+    return 1
   fi
+
+  # Move to top level of the project for the entirety of the script.
+
+  toplevel="$(git rev-parse --show-toplevel 2> /dev/null)"
+  readonly toplevel
+  cd "$toplevel" || return 1
 
   # Update repo.
 
@@ -29,10 +38,16 @@ main() {
   # If input is just a number, try to match it to a branch.
 
   if [[ "$target_branch" =~ ^[0-9]+$ ]]; then
-    if branch_exists "issue-$target_branch"; then
+    # Use local findbranch script first if one exists.
+    local -r findbranch_script="switchto_findbranch"
+    local found_branch
+    if which "$findbranch_script" &> /dev/null && found_branch="$($findbranch_script "$target_branch")"; then
+      target_branch="$found_branch"
+    elif branchexists "issue-$target_branch"; then
       target_branch="issue-$target_branch"
-    elif [[ $(type -t switchto_findbranch) == function ]]; then
-      target_branch="$(switchto_findbranch "$target_branch")"
+    else
+      printf "\nCouldn't find a valid branch for '%s'.\n" "$target_branch" >&2
+      return 1
     fi
   fi
 
@@ -57,17 +72,18 @@ main() {
   # Check skip install flag.
 
   if ! $skip_install; then
-    # First check for a custom install function.
-    if [[ $(type -t switchto_install) == function ]]; then
-      switchto_install
+    # First check for a custom install script.
+    readonly install_script="switchto_install"
+    if which "$install_script" &> /dev/null; then
+      $install_script
     # Check if it's a node project.
     elif [[ -e ./package.json ]]; then
       printf "\nInstalling node packages...\n\n"
-      npm install
+      npm install > /dev/null
     # Check for a Makefile.
     elif [[ -e ./Makefile ]]; then
       printf "\nRunning make...\n\n"
-      make
+      make > /dev/null
     fi
   fi
 }
