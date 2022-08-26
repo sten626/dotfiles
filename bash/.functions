@@ -1,5 +1,21 @@
 # shellcheck shell=bash
 
+# Check if a branch exists.
+
+branch_exists() {
+  if [[ $# -ne 1 ]]; then
+    return 1
+  fi
+
+  readonly branch="$1"
+
+  if git show-branch "$branch" &> /dev/null || git show-branch "remotes/origin/$branch" &> /dev/null; then
+    return 0
+  fi
+
+  return 1
+}
+
 # Make a new directory and move into it.
 mkd() {
   mkdir -p "$@" && cd "$_" || return 1
