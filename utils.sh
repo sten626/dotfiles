@@ -104,6 +104,16 @@ print_question() {
   print_in_yellow "   [?] $1"
 }
 
+print_result() {
+  if [[ "$1" -eq 0 ]]; then
+    print_success "$2"
+  else
+    print_error "$2"
+  fi
+
+  return "$1"
+}
+
 print_success() {
   print_in_green "   [✔] $1\n"
 }
