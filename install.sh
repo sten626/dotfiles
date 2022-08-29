@@ -16,7 +16,7 @@ create_bash_local() {
   local -r file_path="$HOME/.bash.local"
 
   if [[ ! -e "$file_path" ]] || [[ -z "$file_path" ]]; then
-    bin_dir="$(dirname "$(pwd)")/bin"
+    bin_dir="$(pwd)/bash/bin"
 
     printf "%s\n" \
 "#!/bin/bash

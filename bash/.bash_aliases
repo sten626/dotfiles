@@ -30,6 +30,7 @@ alias c='clear'
 alias g='git'
 alias m='man'
 alias n='npm'
+alias s='switchto'
 alias w='cd $HOME/workspace'
 
 # Kill
