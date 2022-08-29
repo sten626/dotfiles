@@ -17,7 +17,7 @@ ask_for_sudo() {
 create_bash_local() {
   local -r file_path="$HOME/.bash.local"
 
-  if [ ! -e "$file_path" ] || [ -z "$file_path" ]; then
+  if [[ ! -e "$file_path" ]] || [[ -z "$file_path" ]]; then
     bin_dir="$(dirname "$(pwd)")/bin"
 
     printf "%s\n" \
@@ -66,9 +66,9 @@ link_file() {
   local overwrite=false
   local skip=false
 
-  if [ -e "$dst" ]; then
+  if [[ -e "$dst" ]]; then
     if ! $backup_all && ! $overwrite_all && ! $skip_all; then
-      if [ "$src" == "$(readlink "$dst")" ]; then
+      if [[ "$src" == "$(readlink "$dst")" ]]; then
         skip=true
       else
         print_question "File already exists: $dst ($(basename "$src")), what do you want to do?
@@ -125,7 +125,7 @@ symlink_dotfiles() {
 
   for src in "$PWD"/bash/.*
   do
-    if [ -f "$src" ]; then
+    if [[ -f "$src" ]]; then
       dst="$HOME/$(basename "$src")"
       link_file "$src" "$dst"
     fi
