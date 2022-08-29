@@ -1,4 +1,4 @@
-# Sten's dotfiles (1.10.0)
+# Sten's dotfiles
 
 This repository contains dotfiles and configuration scripts to set up my own development environment on a new machine. I'm currently using WSL and various Linux machines so that's what this is mostly for. Feel free to use this yourself but use at your own risk.
 
