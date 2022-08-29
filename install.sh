@@ -31,9 +31,31 @@ PATH=\"$bin_dir:\$PATH\"
 
 export PATH
 " >> "$file_path"
-
-    print_result $? "$file_path"
   fi
+
+  print_result $? "$file_path"
+}
+
+create_gitconfig_local() {
+  local -r file_path="$HOME/.gitconfig.local"
+
+  if [[ ! -e "$file_path" ]] || [[ -z "$file_path" ]]; then
+    read -r -p "Full name to use with git: " name
+    read -r -p "Email address to use with git: " email
+
+    printf "[user]
+email = %s
+name = %s" "$email" "$name" >> "$file_path"
+  fi
+
+  print_result $? "$file_path"
+}
+
+create_local_config_files() {
+  print_in_cyan "\n • Create local config files\n\n"
+
+  create_bash_local
+  create_gitconfig_local
 }
 
 link_file() {
@@ -141,8 +163,9 @@ main() {
   verify_os "$force" || exit 1
   ask_for_sudo
   symlink_dotfiles
-  create_bash_local
+  create_local_config_files
   ./installs/main.sh
+  printf "\n"
 }
 
 main "$@"
