@@ -19,7 +19,7 @@ git_details() {
   fi
 
   # Check for unstaged changes.
-  if ! git diff-files --quiet --ignore-submodules; then
+  if ! git diff --no-ext-diff --quiet; then
     modifier+='!'
   fi
 
