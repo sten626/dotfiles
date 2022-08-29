@@ -1,16 +1,25 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" && . ../utils.sh
+main() {
+  cd "$(dirname "${BASH_SOURCE[0]}")" && . ../utils.sh
 
-print_in_cyan "\n • Install packages\n\n"
+  print_in_cyan "\n • Install packages\n\n"
 
-os="$(get_os)"
-readonly os
-readonly os_installer="./$os/main.sh"
+  # Detect OS.
 
-# shellcheck disable=SC1090
-if [[ -f $os_installer ]]; then
-  . "$os_installer"
-else
-  print_success "No package installer found for $os."
-fi
+  local os
+  os="$(get_os)"
+  readonly os
+
+  # Run specific installs for OS.
+
+  local -r os_installer="./$os/main.sh"
+  if [[ -f "$os_installer" ]]; then
+    # shellcheck disable=SC1090
+    "$os_installer"
+  else
+    print_success "No package installer found for $os."
+  fi
+}
+
+main

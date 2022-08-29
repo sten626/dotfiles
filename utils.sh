@@ -1,4 +1,4 @@
-#!/bin/bash
+# shellcheck shell=bash
 
 execute() {
   local -r cmd="$1"
@@ -26,7 +26,7 @@ execute() {
   wait "$cmdPid" &> /dev/null
   local exitCode=$?
 
-  if [ "$exitCode" -eq 0 ]; then
+  if [[ "$exitCode" -eq 0 ]]; then
     print_success "$msg"
   else
     print_error "$msg"
@@ -43,8 +43,9 @@ get_os() {
   local kernelName=""
 
   kernelName="$(uname --kernel-name)"
+  readonly kernelName
 
-  if [ "$kernelName" == "Linux" ] && [ -e "/etc/os-release" ]; then
+  if [[ "$kernelName" == "Linux" && -e "/etc/os-release" ]]; then
     os="$(. /etc/os-release; echo "$ID")"
   else
     os="$kernelName"

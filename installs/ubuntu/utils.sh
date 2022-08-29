@@ -1,4 +1,4 @@
-#!/bin/bash
+# shellcheck shell=bash
 
 install_package() {
   local -r package=$1
@@ -16,4 +16,16 @@ install_package() {
 
 package_is_installed() {
   dpkg --status "$1" &> /dev/null
+}
+
+update() {
+  execute \
+    "sudo apt-get update -qq" \
+    "apt (update)"
+}
+
+upgrade() {
+  execute \
+    "export DEBIAN_FRONTEND=noninteractive && sudo apt-get --option Dpkg::Options::=\"--force-confnew\" upgrade -qq" \
+    "apt (upgrade)"
 }

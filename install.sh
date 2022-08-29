@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd "$(dirname "${BASH_SOURCE[0]}")" && . "utils.sh"
-
 ask_for_sudo() {
   # Ask for admin password.
   sudo --validate &> /dev/null
@@ -149,6 +147,8 @@ verify_os() {
 }
 
 main() {
+  cd "$(dirname "${BASH_SOURCE[0]}")" && . utils.sh
+
   local force=false
 
   while :; do
