@@ -5,7 +5,7 @@ main() {
     return 1
   fi
 
-  readonly branch="$1"
+  local -r branch="$1"
 
   if git show-branch "$branch" &> /dev/null || git show-branch "remotes/origin/$branch" &> /dev/null; then
     return 0

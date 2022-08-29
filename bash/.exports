@@ -14,10 +14,18 @@ export HISTFILESIZE=2000
 export LANG="en_US.UTF-8"
 
 # Set OS related variables.
-OS="$(get_os)"
-export OS
 
-if is_wsl; then
+kernel_name="$(uname --kernel-name)"
+if [[ "$kernel_name" == "Linux" && -e /etc/os-release ]]; then
+  OS="$(. /etc/os-release; echo "$ID")"
+else
+  OS="$kernel_name"
+fi
+
+export OS
+unset kernel_name
+
+if grep --extended-regexp --ignore-case --quiet "(microsoft|wsl)" /proc/version &> /dev/null; then
   export WSL=true
   export CHROME_BIN="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
 fi
@@ -29,11 +37,11 @@ export NVM_DIR="$HOME/.nvm"
 export TZ="America/Regina"
 
 # set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
+if [[ -d "$HOME/bin" ]] ; then
   export PATH="$HOME/bin:$PATH"
 fi
 
 # set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/.local/bin" ] ; then
+if [[ -d "$HOME/.local/bin" ]] ; then
   export PATH="$HOME/.local/bin:$PATH"
 fi
