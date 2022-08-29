@@ -1,0 +1,108 @@
+#!/bin/bash
+
+main() {
+
+  # Parse options and arguments
+
+  local skip_install=false
+
+  while getopts 'hs' flag; do
+    case "$flag" in
+      h) print_usage
+         return 0 ;;
+      s) skip_install=true ;;
+      *) print_usage
+         return 1 ;;
+    esac
+  done
+
+  shift $((OPTIND-1))
+  local target_branch="$1"
+
+  if [[ -z $target_branch ]]; then
+    print_usage
+    return 1
+  fi
+
+  # Move to top level of the project for the entirety of the script.
+
+  toplevel="$(git rev-parse --show-toplevel 2> /dev/null)"
+  readonly toplevel
+  cd "$toplevel" || return 1
+
+  # Update repo.
+
+  printf "Updating git repo...\n\n"
+  git fetch --prune --prune-tags
+
+  # If input is just a number, try to match it to a branch.
+
+  if [[ "$target_branch" =~ ^[0-9]+$ ]]; then
+    # Use local findbranch script first if one exists.
+    local -r findbranch_script="switchto_findbranch"
+    local found_branch
+    if which "$findbranch_script" &> /dev/null && found_branch="$($findbranch_script "$target_branch")"; then
+      target_branch="$found_branch"
+    elif branchexists "issue-$target_branch"; then
+      target_branch="issue-$target_branch"
+    else
+      printf "\nCouldn't find a valid branch for '%s'.\n" "$target_branch" >&2
+      return 1
+    fi
+  elif ! branchexists "$target_branch"; then
+    printf "\nCouldn't find branch '%s'.\n" "$target_branch" >&2
+    return 1
+  fi
+
+  # Attempt to checkout the target branch, or return if it fails.
+
+  printf "Checking out '%s'.\n\n" "$target_branch"
+  git checkout "$target_branch" || return 1
+
+  # Check if the branch is behind origin, and offer to pull.
+
+  local rev_list_count
+  rev_list_count="$(git rev-list --count --left-right "@{upstream}"...HEAD 2> /dev/null)"
+
+  if [[ $rev_list_count != 0* ]] && [[ $rev_list_count == *"$(printf "\t0")" ]]; then
+    read -r -n 1 -p "Branch is behind origin. Pull? [Y/n] "
+
+    if [[ -z $REPLY ]] || [[ $REPLY == @(Y|y) ]]; then
+      git pull
+    fi
+  fi
+
+  # Check skip install flag.
+
+  if ! $skip_install; then
+    # First check for a custom install script.
+    readonly install_script="switchto_install"
+    if which "$install_script" &> /dev/null; then
+      $install_script
+    # Check if it's a node project.
+    elif [[ -e ./package.json ]]; then
+      printf "\nInstalling node packages...\n\n"
+      npm install > /dev/null
+    # Check for a Makefile.
+    elif [[ -e ./Makefile ]]; then
+      printf "\nRunning make...\n\n"
+      make > /dev/null
+    fi
+  fi
+}
+
+print_usage() {
+  printf "Usage: %s [-hs] BRANCH | ISSUE_NUMBER\n" "$(basename "$0")"
+  printf "Update git repository, check out given branch, and install.\n"
+  printf "\n"
+  printf "Options:\n"
+  printf "  -h\tdisplay this message and exit\n"
+  printf "  -s\tskip installation step\n"
+  printf "\n"
+  printf "Arguments:\n"
+  printf "  BRANCH\tName of the branch to checkout\n"
+  printf "  ISSUE_NUMBER\tIssue number for the wanted branch, will try to match\n"
+  printf "\n"
+}
+
+main "$@"

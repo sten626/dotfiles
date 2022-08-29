@@ -1,30 +1,27 @@
 # Sten's dotfiles (1.10.0)
 
-This repository contains dotfiles and configuration scripts to set up my own development environment on a new machine. I'm currently using WSL so that's what this is mostly for. Feel free to use this yourself but use at your own risk.
+This repository contains dotfiles and configuration scripts to set up my own development environment on a new machine. I'm currently using WSL and various Linux machines so that's what this is mostly for. Feel free to use this yourself but use at your own risk.
 
 ## Setup
 
-### Windows
-
-If you're running this in WSL on Windows, you'll probably want to install an X server on Windows, e.g. Xming.
-
 ### Setup Script
 
-To set up everything do either of the following.
+To set up everything do the following.
 
-- Run the following command which should handle everything:
+- Install git.
+- Clone the repository:
 
 ```bash
-bash -c "$(wget -qO - https://raw.github.com/sten626/dotfiles/master/src/os/setup.sh)"
+git clone https://github.com/sten626/dotfiles.git
 ```
 
-- If you already have Git installed, you can just clone the repository and run `src/os/setup.sh`.
+- Run the install script in the root directory, `./install.sh`.
+
+Note: I may add back a standalone install script that doesn't require git to be preinstalled at some point but not right now.
 
 ### What it Does
 
-- Downloads all the files.
-- Creates a workspace directory in your Windows User folder and a symlink to the workspace in your WSL `home`.
-- Creates symlinks for all the `bash`, `git`, and `vim` files in your WSL `home`.
+- Creates symlinks for all the dotfiles in the `bash` directory in your user home directory.
 - Creates local config files for `bash` and `git`, to include personal information that shouldn't be stored in the repository.
 - Installs various applications and command line tools.
 
@@ -37,6 +34,26 @@ The `~/.bash.local` file is sourced last and is a good place to store local alia
 #### `~/.gitconfig.local`
 
 The `~/.gitconfig.local` is included by the regular `~/.gitconfig` file and is the ideal place to store sensitive or personal information such as your name or email address.
+
+## `bin/` Scripts
+
+Some utility scripts I like to use.
+
+### `branchexists`
+
+Checks if a given branch name exists in the current repository. Could easily be a bash function, but made it a script to more easily incorporate into other scripts.
+
+### `switchto`
+
+Script for easily changing branches in a git repository. I've tried to make it fairly agnostic and extendible.
+
+#### `switchto_findbranch`
+
+If a script with this name exists in your `PATH`, `switchto` will use it to try and resolve a number argument into a branch name. By default it only looks for `issue-NUM`
+
+#### `switchto_install`
+
+If a script with this name exists in your `PATH`, `switchto` will use it to install/compile after switching branches. By default it will only run `npm install` or `make` depending on what files it sees in the project root.
 
 ## Thanks
 
