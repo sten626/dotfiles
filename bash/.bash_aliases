@@ -9,7 +9,7 @@ alias .....='cd ../../../..'
 
 # Enable color support of ls and also add handy aliases
 
-if [ -x /usr/bin/dircolors ]; then
+if [[ -x /usr/bin/dircolors ]]; then
   # shellcheck disable=SC2015
   test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
   alias ls='ls --color=auto'
@@ -40,7 +40,7 @@ alias ku1='kill -USR1'
 
 # WSL
 
-if [ -n "$WSL" ]; then
+if $WSL; then
   alias open='explorer.exe'
 fi
 
@@ -49,7 +49,7 @@ fi
 bash_dir="$(dirname "$(readlink "${BASH_SOURCE[0]}")")"
 os_aliases_file="$bash_dir/$OS/.bash_aliases"
 
-if [ -f "$os_aliases_file" ]; then
+if [[ -f "$os_aliases_file" ]]; then
   # shellcheck disable=SC1090
   . "$os_aliases_file"
 fi

@@ -1,6 +1,10 @@
 # shellcheck shell=bash
 
-# include .bashrc if it exists
-if [ -f "$HOME/.bashrc" ]; then
-  . "$HOME/.bashrc"
+# Include .bashrc if it exists.
+
+bashrc_file="$HOME/.bashrc"
+if [[ -f "$bashrc_file" ]]; then
+  # shellcheck source=./.bashrc
+  . "$bashrc_file"
 fi
+unset bashrc_file

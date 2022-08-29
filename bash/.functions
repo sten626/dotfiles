@@ -7,7 +7,7 @@ mkd() {
 
 # Call `open` with the given args, or on pwd if none given.
 o() {
-  if [ $# -eq 0 ]; then
+  if [[ $# -eq 0 ]]; then
     open .
   else
     open "$@"
@@ -33,7 +33,7 @@ targz() {
 }
 
 untargz() {
-  if [ $# -lt 2 ]; then
+  if [[ $# -lt 2 ]]; then
     tar -xvf "$1"
   else
     tar -xvf "$1" -C "$2"
