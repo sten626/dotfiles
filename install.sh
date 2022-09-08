@@ -19,7 +19,7 @@ create_bash_local() {
     bin_dir="$(pwd)/bash/bin"
 
     printf "%s\n" \
-"#!/bin/bash
+"# shellcheck shell=bash
 
 ### Set PATH additions.
 
