@@ -47,13 +47,13 @@
   ft = describe --always --contains
 
   # View abbreviated SHA, description, and history graph of the latest 20 commits.
-	l = log --pretty=oneline --max-count=20 --graph --abbrev-commit
+  l = log --pretty=oneline --max-count=20 --graph --abbrev-commit
 
   # Interactive rebase with N commits.
   reb = "!r() { git rebase --interactive HEAD~$1; }; r"
 
   # View the current working tree status using the short format.
-	s = status --short
+  s = status --short
 
 [apply]
 
@@ -77,7 +77,7 @@
 [pull]
 
   # Rebase the current branch on top of upstream.
-	rebase = true
+  rebase = true
 
 [push]
 
