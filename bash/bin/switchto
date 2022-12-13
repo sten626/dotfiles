@@ -64,11 +64,11 @@ main() {
   local rev_list_count
   rev_list_count="$(git rev-list --count --left-right "@{upstream}"...HEAD 2> /dev/null)"
 
-  if [[ $rev_list_count != 0* ]] && [[ $rev_list_count == *"$(printf "\t0")" ]]; then
+  if [[ $rev_list_count =~ ^[1-9] ]]; then
     read -r -n 1 -p "Branch is behind origin. Pull? [Y/n] "
 
     if [[ -z $REPLY ]] || [[ $REPLY == @(Y|y) ]]; then
-      git pull
+      git pull || return 1
     fi
   fi
 
