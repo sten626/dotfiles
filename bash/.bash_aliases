@@ -41,7 +41,7 @@ alias ku1='kill -USR1'
 
 # WSL
 
-if $WSL; then
+if [[ -n $WSL ]]; then
   alias open='explorer.exe'
 fi
 
