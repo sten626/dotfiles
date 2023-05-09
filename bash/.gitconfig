@@ -1,3 +1,7 @@
+[advice]
+
+  detachedHead = false
+
 [alias]
 
   # Simple aliases.
