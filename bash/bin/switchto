@@ -37,17 +37,38 @@ main() {
 
   # If input is just a number, try to match it to a branch.
 
-  if [[ "$target_branch" =~ ^[0-9]+$ ]]; then
-    # Use local findbranch script first if one exists.
-    local -r findbranch_script="switchto_findbranch"
-    local found_branch
-    if which "$findbranch_script" &> /dev/null && found_branch="$($findbranch_script "$target_branch")"; then
-      target_branch="$found_branch"
-    elif branchexists "issue-$target_branch"; then
-      target_branch="issue-$target_branch"
-    else
+  if [[ $target_branch =~ ^[0-9]+$ ]]; then
+    local branches
+    mapfile -t branches < <(git branch --all | grep "$target_branch" | sed -r "s/(^.+\/)|(^\**\s+)//" | sort | uniq)
+    local -r n_branches="${#branches[@]}"
+
+    if [[ $n_branches -lt 1 ]]; then
       printf "\nCouldn't find a valid branch for '%s'.\n" "$target_branch" >&2
       return 1
+    elif [[ $n_branches -eq 1 ]]; then
+      target_branch="${branches[0]}"
+    else
+      printf "Ambiguous branch...\n\n"
+      local branch
+      local i=1
+
+      for branch in "${branches[@]}"
+      do
+        printf "%s) %s\n" "$((i++))" "$branch"
+      done
+
+      local choice=""
+
+      while [[ -z $choice ]]
+      do
+        read -r -p "Which branch? "
+
+        if [[ $REPLY -gt 0 ]] && [[ $REPLY -le $n_branches ]]; then
+          choice="$REPLY"
+        fi
+      done
+
+      target_branch="${branches[$choice - 1]}"
     fi
   elif ! branchexists "$target_branch"; then
     printf "\nCouldn't find branch '%s'.\n" "$target_branch" >&2
