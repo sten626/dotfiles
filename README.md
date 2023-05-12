@@ -47,10 +47,6 @@ Checks if a given branch name exists in the current repository. Could easily be 
 
 Script for easily changing branches in a git repository. I've tried to make it fairly agnostic and extendible.
 
-#### `switchto_findbranch`
-
-If a script with this name exists in your `PATH`, `switchto` will use it to try and resolve a number argument into a branch name. By default it only looks for `issue-NUM`
-
 #### `switchto_install`
 
 If a script with this name exists in your `PATH`, `switchto` will use it to install/compile after switching branches. By default it will only run `npm install` or `make` depending on what files it sees in the project root.
