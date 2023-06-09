@@ -35,20 +35,30 @@ main() {
   printf "Updating git repo...\n\n"
   git fetch --prune --prune-tags
 
-  # If input is just a number, try to match it to a branch.
+  # Check for matching branches or tags.
 
-  if [[ $target_branch =~ ^[0-9]+$ ]]; then
+  if [[ $target_branch =~ ^[0-9.]+$ ]]; then
     local branches
+    local n_branches
+
+    # Add branches to list.
     mapfile -t branches < <(git branch --all | grep "$target_branch" | sed -r "s/(^.+\/)|(^\**\s+)//" | sort | uniq)
-    local -r n_branches="${#branches[@]}"
+
+    if [[ $target_branch =~ \. ]]; then
+      # Has a ., probably a version, also search tags.
+      n_branches="${#branches[@]}"
+      mapfile -O "$n_branches" -t branches < <(git tag --list | grep "$target_branch" | sort)
+    fi
+
+    n_branches="${#branches[@]}"
 
     if [[ $n_branches -lt 1 ]]; then
-      printf "\nCouldn't find a valid branch for '%s'.\n" "$target_branch" >&2
+      printf "\nCouldn't find a valid branch or tag for '%s'.\n" "$target_branch" >&2
       return 1
     elif [[ $n_branches -eq 1 ]]; then
       target_branch="${branches[0]}"
     else
-      printf "Ambiguous branch...\n\n"
+      printf "Ambiguous branch or tag...\n\n"
       local branch
       local i=1
 
@@ -61,7 +71,7 @@ main() {
 
       while [[ -z $choice ]]
       do
-        read -r -p "Which branch? "
+        read -r -p "Which branch/tag? "
 
         if [[ $REPLY -gt 0 ]] && [[ $REPLY -le $n_branches ]]; then
           choice="$REPLY"
@@ -71,7 +81,7 @@ main() {
       target_branch="${branches[$choice - 1]}"
     fi
   elif ! branchexists "$target_branch"; then
-    printf "\nCouldn't find branch '%s'.\n" "$target_branch" >&2
+    printf "\nCouldn't find branch or tag '%s'.\n" "$target_branch" >&2
     return 1
   fi
 
