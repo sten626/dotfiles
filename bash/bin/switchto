@@ -88,7 +88,7 @@ main() {
   # Attempt to checkout the target branch, or return if it fails.
 
   printf "Checking out '%s'.\n\n" "$target_branch"
-  git checkout "$target_branch" || return 1
+  git checkout "$target_branch" -- || return 1
 
   # Check if the branch is behind origin, and offer to pull.
 
