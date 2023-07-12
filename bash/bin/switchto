@@ -42,7 +42,7 @@ main() {
     local n_branches
 
     # Add branches to list.
-    mapfile -t branches < <(git branch --all | grep "$target_branch" | sed -r "s/(^.+\/)|(^\**\s+)//" | sort | uniq)
+    mapfile -t branches < <(git branch --all | grep "$target_branch" | sed -r "s/(^.+\/)|(^[*+]*\s+)//" | sort | uniq)
 
     if [[ $target_branch =~ \. ]]; then
       # Has a ., probably a version, also search tags.
