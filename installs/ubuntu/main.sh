@@ -12,7 +12,8 @@ main() {
   ./nvm.sh
   ./misc.sh
 
-  ./npm.sh
+  ./pnpm.sh
+  # ./npm.sh
 }
 
 main
