@@ -1,6 +1,6 @@
 #!/bin/bash
 
-install_package() {
+install_pnpm_package() {
   execute "pnpm install --global $1" "$1"
 }
 
@@ -13,10 +13,10 @@ main() {
   # shellcheck disable=SC1091
   . "$HOME/.bashrc"
 
-  install_package "@angular/cli"
-  install_package "eslint"
-  install_package "sass"
-  install_package "typescript"
+  install_pnpm_package "@angular/cli"
+  install_pnpm_package "eslint"
+  install_pnpm_package "sass"
+  install_pnpm_package "typescript"
 }
 
 main
