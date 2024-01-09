@@ -33,7 +33,7 @@ main() {
   # Update repo.
 
   printf "Updating git repo...\n\n"
-  git fetch --prune --prune-tags
+  git fetch --prune --prune-tags || return 1
 
   # Check for matching branches or tags.
 
