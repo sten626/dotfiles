@@ -47,6 +47,10 @@ Checks if a given branch name exists in the current repository. Could easily be 
 
 Script for easily changing branches in a git repository. I've tried to make it fairly agnostic and extendible.
 
+### `switchto_filter`
+
+If a script with this name exists in your `PATH`, `switchto` will pass a bash array of branch and tag names to it. Use the script to filter out ones you don't want, and return wanted branches and tags one-per-line.
+
 #### `switchto_install`
 
 If a script with this name exists in your `PATH`, `switchto` will use it to install/compile after switching branches. By default it will only run `npm install` or `make` depending on what files it sees in the project root.
