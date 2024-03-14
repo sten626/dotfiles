@@ -43,11 +43,17 @@ main() {
 
     # Add branches to list.
     mapfile -t branches < <(git branch --all | grep "$target_branch" | sed -r "s/(^.+\/)|(^[*+]*\s+)//" | sort | uniq)
-
+    
     if [[ $target_branch =~ \. ]]; then
       # Has a ., probably a version, also search tags.
       n_branches="${#branches[@]}"
       mapfile -O "$n_branches" -t branches < <(git tag --list | grep "$target_branch" | sort)
+    fi
+
+    local -r filter_script="switchto_filter"
+
+    if which "$filter_script"; then
+      mapfile -t branches < <("$filter_script" "${branches[@]}")
     fi
 
     n_branches="${#branches[@]}"
