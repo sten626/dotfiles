@@ -52,7 +52,7 @@ main() {
 
     local -r filter_script="switchto_filter"
 
-    if which "$filter_script"; then
+    if which "$filter_script" &> /dev/null; then
       mapfile -t branches < <("$filter_script" "${branches[@]}")
     fi
 
