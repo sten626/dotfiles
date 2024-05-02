@@ -53,6 +53,9 @@
   # View abbreviated SHA, description, and history graph of the latest 20 commits.
   l = log --pretty=oneline --max-count=20 --graph --abbrev-commit
 
+  # push --force-if-includes
+  pf = push --force-if-includes
+
   # Interactive rebase with N commits.
   reb = "!r() { git rebase --interactive HEAD~$1; }; r"
 
