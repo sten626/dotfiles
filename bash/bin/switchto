@@ -20,8 +20,8 @@ main() {
   local target_branch="$1"
 
   if [[ -z $target_branch ]]; then
-    print_usage
-    return 1
+    # If no target was passed in, use the current branch i.e. bring up-to-date.
+    target_branch=$(git rev-parse --abbrev-ref HEAD)
   fi
 
   # Move to top level of the project for the entirety of the script.
