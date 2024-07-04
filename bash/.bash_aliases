@@ -33,6 +33,10 @@ alias n='npm'
 alias s='switchto'
 alias w='cd $HOME/workspace'
 
+# Disk usage sorted
+
+alias dus='du --human-readable --max-depth 2 * | sort --human-numeric-sort'
+
 # Kill
 
 alias k='kill'
