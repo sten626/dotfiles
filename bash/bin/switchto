@@ -33,7 +33,16 @@ main() {
   # Update repo.
 
   printf "Updating git repo...\n\n"
-  git fetch --prune --prune-tags || return 1
+
+  if ! git fetch --prune --prune-tags; then
+    read -n 1 -r -p "\nFetch failed. Force update tags? [Y/n] "
+
+    if [[ -z $REPLY ]] || [[ $REPLY == @(Y|y) ]]; then
+      git fetch --force --tags || return 1
+    else
+      return 1
+    fi
+  fi
 
   # Check for matching branches or tags.
 
