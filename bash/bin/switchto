@@ -24,6 +24,13 @@ main() {
     target_branch=$(git rev-parse --abbrev-ref HEAD)
   fi
 
+  # Make sure that we're in a git repo.
+
+  if ! ([[ -d .git ]] || git rev-parse --is-inside-work-tree &> /dev/null); then
+    printf "Looks like you're not in a git repo.\n"
+    return 1
+  fi
+
   # Move to top level of the project for the entirety of the script.
 
   toplevel="$(git rev-parse --show-toplevel 2> /dev/null)"
