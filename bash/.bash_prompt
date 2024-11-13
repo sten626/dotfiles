@@ -18,13 +18,15 @@ git_details() {
     modifier+='+'
   fi
 
-  # Check for unstaged changes.
-  if ! git diff --no-ext-diff --quiet; then
-    modifier+='!'
-  fi
-
-  # Check for untracked files, disable if NFS.
+  # Disable unstaged and untracked on NFS because it's too slow.
   if [[ $(mount_type) != nfs ]]; then
+
+    # Check for unstaged changes.
+    if ! git diff --no-ext-diff --quiet; then
+      modifier+='!'
+    fi
+
+    # Check for untracked files.
     if [ -n "$(git ls-files --others --exclude-standard)" ]; then
       modifier+='?'
     fi
