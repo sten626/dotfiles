@@ -10,9 +10,6 @@ export HISTCONTROL="ignoreboth"
 export HISTSIZE=1000
 export HISTFILESIZE=2000
 
-# Set default language to US English.
-export LANG="en_US.UTF-8"
-
 # Set OS related variables.
 
 kernel_name="$(uname --kernel-name)"
