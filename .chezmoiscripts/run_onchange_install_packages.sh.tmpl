@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -euo pipefail
+
+{{ range .packages.shared -}}
+sudo dnf install {{ . }}
+{{ end -}}

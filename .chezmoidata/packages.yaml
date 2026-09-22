@@ -1,0 +1,6 @@
+packages:
+  shared:
+    - curl
+    - git
+    - htop
+    - ripgrep

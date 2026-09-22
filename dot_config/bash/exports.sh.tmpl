@@ -1,0 +1,22 @@
+# shellcheck shell=bash
+
+# Set vim as the default text editor.
+export EDITOR="/usr/bin/vi"
+
+# Set timezone to Regina to show correct time no matter what machine I'm logged into.
+export TZ="America/Regina"
+
+if ! [[ "$PATH" =~ $HOME/.local/bin:$HOME/bin: ]]; then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+
+# Bitwarden
+export SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock"
+
+# NVM
+export NVM_DIR="$XDG_CONFIG_HOME/nvm"
+# shellcheck source=/dev/null
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
+# shellcheck source=/dev/null
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

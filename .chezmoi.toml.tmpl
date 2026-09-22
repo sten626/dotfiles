@@ -1,0 +1,23 @@
+{{- $name := "" -}}
+{{- if hasKey . "name" -}}
+{{-   $name = .name -}}
+{{- else -}}
+{{-   $name = promptStringOnce . "name" "Name" -}}
+{{- end -}}
+{{- $email := "" -}}
+{{- if hasKey . "email" -}}
+{{-   $email = .email -}}
+{{- else -}}
+{{-   $email = promptStringOnce . "email" "Email" -}}
+{{- end -}}
+
+[data]
+email = {{ $email | quote }}
+name = {{ $name | quote }}
+xdg_cache_home = "{{ .chezmoi.homeDir }}/.cache"
+xdg_config_home = "{{ .chezmoi.homeDir }}/.config"
+xdg_data_home = "{{ .chezmoi.homeDir }}/.local/share"
+
+[edit]
+command = "code"
+args = ["--wait"]

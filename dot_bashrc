@@ -1,0 +1,27 @@
+# shellcheck shell=bash
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+    . /etc/bashrc
+fi
+
+# User specific environment
+
+# XDG Base Directory Specification
+export XDG_CONFIG_HOME=$HOME/.config
+export XDG_CACHE_HOME=$HOME/.cache
+export XDG_DATA_HOME=$HOME/.local/share
+
+# shellcheck source=/dev/null
+[ -f "$XDG_CONFIG_HOME/bash/exports.sh" ] && . "$XDG_CONFIG_HOME/bash/exports.sh"
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+
+# shellcheck source=./dot_config/bash/aliases.sh.tmpl
+[ -f "$XDG_CONFIG_HOME/bash/aliases.sh" ] && . "$XDG_CONFIG_HOME/bash/aliases.sh"
+# shellcheck source=./dot_config/bash/functions.sh
+[ -f "$XDG_CONFIG_HOME/bash/functions.sh" ] && . "$XDG_CONFIG_HOME/bash/functions.sh"

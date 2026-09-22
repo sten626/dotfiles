@@ -1,0 +1,40 @@
+# shellcheck shell=bash
+
+# Navigation
+
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+# Shortcuts
+
+alias c='clear'
+alias g='git'
+alias m='man'
+alias n='npm'
+alias s='switchto'
+alias w='cd $HOME/workspace'
+
+# Disk usage sorted
+
+alias dus='du --human-readable --max-depth 2 * | sort --human-numeric-sort'
+
+# Kill
+
+alias k='kill'
+alias k9='kill -9'
+alias ku1='kill -USR1'
+
+# Enable any OS specific aliases
+
+# {{- if eq .chezmoi.osRelease.id "fedora" }} 
+alias i='sudo dnf install'
+alias u='sudo dnf upgrade'
+# {{- else if eq .chezmoi.osRelease.id "ubuntu" }}
+alias i='sudo apt install'
+alias u='sudo apt update && sudo apt upgrade'
+# {{- else if eq .chezmoi.osRelease.id "centos" }}
+alias i='sudo yum install'
+alias u='sudo yum update'
+# {{- end }}
