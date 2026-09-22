@@ -8,10 +8,8 @@ fi
 
 # User specific environment
 
-# XDG Base Directory Specification
-export XDG_CONFIG_HOME=$HOME/.config
-export XDG_CACHE_HOME=$HOME/.cache
-export XDG_DATA_HOME=$HOME/.local/share
+# shellcheck source=./dot_config/bash/env.sh
+[ -f "$XDG_CONFIG_HOME/bash/env.sh" ] && . "$XDG_CONFIG_HOME/bash/env.sh"
 
 # shellcheck source=/dev/null
 [ -f "$XDG_CONFIG_HOME/bash/exports.sh" ] && . "$XDG_CONFIG_HOME/bash/exports.sh"
@@ -25,3 +23,7 @@ export XDG_DATA_HOME=$HOME/.local/share
 [ -f "$XDG_CONFIG_HOME/bash/aliases.sh" ] && . "$XDG_CONFIG_HOME/bash/aliases.sh"
 # shellcheck source=./dot_config/bash/functions.sh
 [ -f "$XDG_CONFIG_HOME/bash/functions.sh" ] && . "$XDG_CONFIG_HOME/bash/functions.sh"
+
+# Any local overrides should be placed in local.sh, which is not tracked by chezmoi.
+# shellcheck source=/dev/null
+[ -f "$XDG_CONFIG_HOME/bash/local.sh" ] && . "$XDG_CONFIG_HOME/bash/local.sh"

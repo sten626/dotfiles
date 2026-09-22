@@ -1,0 +1,162 @@
+#!/bin/bash
+
+main() {
+
+  # Parse options and arguments
+
+  local skip_install=false
+
+  while getopts 'hs' flag; do
+    case "$flag" in
+      h) print_usage
+         return 0 ;;
+      s) skip_install=true ;;
+      *) print_usage
+         return 1 ;;
+    esac
+  done
+
+  shift $((OPTIND-1))
+  local target_branch="$1"
+
+  if [[ -z $target_branch ]]; then
+    # If no target was passed in, use the current branch i.e. bring up-to-date.
+    target_branch=$(git rev-parse --abbrev-ref HEAD)
+  fi
+
+  # Make sure that we're in a git repo.
+
+  if ! ([[ -d .git ]] || git rev-parse --is-inside-work-tree &> /dev/null); then
+    printf "Looks like you're not in a git repo.\n"
+    return 1
+  fi
+
+  # Move to top level of the project for the entirety of the script.
+
+  toplevel="$(git rev-parse --show-toplevel 2> /dev/null)"
+  readonly toplevel
+  cd "$toplevel" || return 1
+
+  # Update repo.
+
+  printf "Updating git repo...\n\n"
+
+  if ! git fetch --prune --prune-tags; then
+    printf "\n"
+    read -n 1 -r -p "Fetch failed. Force update tags? [Y/n] "
+
+    if [[ -z $REPLY ]] || [[ $REPLY == @(Y|y) ]]; then
+      git fetch --force --tags || return 1
+    else
+      return 1
+    fi
+  fi
+
+  # Check for matching branches or tags.
+
+  if [[ $target_branch =~ ^[0-9.]+$ ]]; then
+    local branches
+    local n_branches
+
+    # Add branches to list.
+    mapfile -t branches < <(git branch --all | grep "$target_branch" | sed -r "s/(^.+\/)|(^[*+]*\s+)//" | sort | uniq)
+
+    if [[ $target_branch =~ \. ]]; then
+      # Has a ., probably a version, also search tags.
+      n_branches="${#branches[@]}"
+      mapfile -O "$n_branches" -t branches < <(git tag --list | grep "$target_branch" | sort)
+    fi
+
+    local -r filter_script="switchto_filter"
+
+    if which "$filter_script" &> /dev/null; then
+      mapfile -t branches < <("$filter_script" "${branches[@]}")
+    fi
+
+    n_branches="${#branches[@]}"
+
+    if [[ $n_branches -lt 1 ]]; then
+      printf "\nCouldn't find a valid branch or tag for '%s'.\n" "$target_branch" >&2
+      return 1
+    elif [[ $n_branches -eq 1 ]]; then
+      target_branch="${branches[0]}"
+    else
+      printf "Ambiguous branch or tag...\n\n"
+      local branch
+      local i=1
+
+      for branch in "${branches[@]}"
+      do
+        printf "%s) %s\n" "$((i++))" "$branch"
+      done
+
+      local choice=""
+
+      while [[ -z $choice ]]
+      do
+        read -r -p "Which branch/tag? "
+
+        if [[ $REPLY -gt 0 ]] && [[ $REPLY -le $n_branches ]]; then
+          choice="$REPLY"
+        fi
+      done
+
+      target_branch="${branches[$choice - 1]}"
+    fi
+  elif ! branchexists "$target_branch"; then
+    printf "\nCouldn't find branch or tag '%s'.\n" "$target_branch" >&2
+    return 1
+  fi
+
+  # Attempt to checkout the target branch, or return if it fails.
+
+  printf "Checking out '%s'.\n\n" "$target_branch"
+  git checkout "$target_branch" -- || return 1
+
+  # Check if the branch is behind origin, and offer to pull.
+
+  local rev_list_count
+  rev_list_count="$(git rev-list --count --left-right "@{upstream}"...HEAD 2> /dev/null)"
+
+  if [[ $rev_list_count =~ ^[1-9] ]]; then
+    read -r -n 1 -p "Branch is behind origin. Pull? [Y/n] "
+
+    if [[ -z $REPLY ]] || [[ $REPLY == @(Y|y) ]]; then
+      git pull || return 1
+    fi
+  fi
+
+  # Check skip install flag.
+
+  if ! $skip_install; then
+    # First check for a custom install script.
+    readonly install_script="switchto_install"
+    if which "$install_script" &> /dev/null; then
+      $install_script
+    # Check if it's a node project.
+    elif [[ -e ./package.json ]]; then
+      printf "\nInstalling node packages...\n\n"
+      npm install > /dev/null
+    # Check for a Makefile.
+    elif [[ -e ./Makefile ]]; then
+      printf "\nRunning make...\n\n"
+      make > /dev/null
+    fi
+  fi
+}
+
+print_usage() {
+  printf "Usage: %s [-hs] BRANCH | ISSUE_NUMBER\n" "$(basename "$0")"
+  printf "Update git repository, check out given branch, and install.\n"
+  printf "\n"
+  printf "Options:\n"
+  printf "  -h\tdisplay this message and exit\n"
+  printf "  -s\tskip installation step\n"
+  printf "\n"
+  printf "Arguments:\n"
+  printf "  BRANCH\tName of the branch to checkout\n"
+  printf "  ISSUE_NUMBER\tIssue number for the wanted branch, will try to match\n"
+  printf "\n"
+}
+
+main "$@"

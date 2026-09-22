@@ -6,11 +6,6 @@ export EDITOR="/usr/bin/vi"
 # Set timezone to Regina to show correct time no matter what machine I'm logged into.
 export TZ="America/Regina"
 
-if ! [[ "$PATH" =~ $HOME/.local/bin:$HOME/bin: ]]; then
-    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
-fi
-export PATH
-
 # Bitwarden
 export SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock"
 
