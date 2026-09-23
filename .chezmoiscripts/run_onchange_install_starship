@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -euo pipefail
+
+sh -c "$(curl --silent --show-error https://starship.rs/install.sh)"

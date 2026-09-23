@@ -32,3 +32,5 @@ export XDG_DATA_HOME=$HOME/.local/share
 # Any local overrides should be placed in local.sh, which is not tracked by chezmoi.
 # shellcheck source=/dev/null
 [ -f "$XDG_CONFIG_HOME/bash/local.sh" ] && . "$XDG_CONFIG_HOME/bash/local.sh"
+
+eval "$(starship init bash)"
