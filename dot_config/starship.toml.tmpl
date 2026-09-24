@@ -29,7 +29,8 @@ $cmd_duration\
 $line_break\
 $character"""
 
-palette = 'catppuccin_mocha'
+
+palette = {{ if eq .is_work true }}'catppuccin_latte'{{ else }}'catppuccin_mocha'{{ end }}
 
 [os]
 disabled = false

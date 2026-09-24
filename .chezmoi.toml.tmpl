@@ -10,9 +10,14 @@
 {{- else -}}
 {{-   $email = promptStringOnce . "email" "Email" -}}
 {{- end -}}
+{{- $is_work := false -}}
+{{- if eq .chezmoi.username "sindzeos" -}}
+{{-   $is_work = true -}}
+{{- end -}}
 
 [data]
 email = {{ $email | quote }}
+is_work = {{ $is_work }}
 name = {{ $name | quote }}
 xdg_cache_home = "{{ .chezmoi.homeDir }}/.cache"
 xdg_config_home = "{{ .chezmoi.homeDir }}/.config"
