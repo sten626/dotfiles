@@ -14,9 +14,14 @@
 {{- if eq .chezmoi.username "sindzeos" -}}
 {{-   $is_work = true -}}
 {{- end -}}
+{{- $is_gnome := false }}
+{{- if eq .chezmoi.osRelease.variantID "workstation" }}
+{{-   $is_gnome = true }}
+{{- end }}
 
 [data]
 email = {{ $email | quote }}
+is_gnome = {{ $is_gnome }}
 is_work = {{ $is_work }}
 name = {{ $name | quote }}
 xdg_cache_home = "{{ .chezmoi.homeDir }}/.cache"

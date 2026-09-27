@@ -12,3 +12,10 @@ if [ -f "$FONTS_DIR/NerdFonts/FiraCodeNerdFontMono-Regular.ttf" ]; then
 fi
 
 sh -c "$(curl --silent --show-error https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/install.sh)" -- install FiraCode
+
+# {{- if .is_gnome }}
+gsettings set org.gnome.Ptyxis use-system-font false
+gsettings set org.gnome.Ptyxis font-name "FiraCode Nerd Font Mono 11"
+# {{- end }}
+
+echo "You may need to completely restart your terminal for the font to take effect."

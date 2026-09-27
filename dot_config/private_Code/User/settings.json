@@ -1,0 +1,7 @@
+{
+    "[shellscript]": {
+        "files.eol": "\n",
+        "editor.defaultColorDecorators": "never"
+    },
+    "editor.fontFamily": "'FiraCode Nerd Font Mono', 'Droid Sans Mono', monospace"
+}
