@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-{{ range .packages.shared -}}
+# {{- range .packages.shared }}
 sudo dnf install {{ . }}
-{{ end -}}
+# {{- end }}

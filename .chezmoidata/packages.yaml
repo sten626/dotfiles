@@ -4,3 +4,5 @@ packages:
     - git
     - htop
     - ripgrep
+  pnpm:
+    - "@bitwarden/cli"
