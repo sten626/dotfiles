@@ -14,10 +14,13 @@
 {{- if eq .chezmoi.username "sindzeos" -}}
 {{-   $is_work = true -}}
 {{- end -}}
-{{- $is_gnome := false }}
-{{- if eq .chezmoi.osRelease.variantID "workstation" }}
-{{-   $is_gnome = true }}
-{{- end }}
+{{- $is_gnome := false -}}
+{{- if eq .chezmoi.osRelease.variantID "workstation" -}}
+{{-   $is_gnome = true -}}
+{{- end -}}
+
+[bitwarden]
+unlock = "auto"
 
 [data]
 email = {{ $email | quote }}
@@ -31,3 +34,7 @@ xdg_data_home = "{{ .chezmoi.homeDir }}/.local/share"
 [edit]
 command = "code"
 args = ["--wait"]
+
+[hooks.read-source-state.pre]
+command = ".local/share/chezmoi/.hooks/pre-read-master.sh"
+
