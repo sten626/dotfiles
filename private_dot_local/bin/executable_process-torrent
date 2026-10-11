@@ -15,6 +15,8 @@ import re
 import shutil
 import sys
 import time
+from dataclasses import dataclass
+from operator import attrgetter
 from pathlib import Path
 
 VIDEO_EXTENSIONS = {
@@ -115,38 +117,48 @@ def find_matching_show_dir(dest_dir: Path, show_name: str) -> str:
     return show_name
 
 
-def parse_episode_metadata(stem: str) -> tuple[str, int, int, int | None] | None:
+@dataclass
+class EpisodeMetadata:
+    title: str
+    season: int
+    episode: int
+    episode_end: int | None = None
+
+
+EPISODE_PATTERNS = (
+    # Standard S01E02 or S01E01-E02 or S01E01-02
+    re.compile(
+        r"^(?P<name>.+?)[\s._-]+[sS](?P<season>\d{1,2})[eE](?P<episode>\d{1,2})(?:[\s._-]*[eE-](?P<episode_end>\d{1,2}))?",
+        re.IGNORECASE,
+    ),
+    # 1x02 or 01x02
+    re.compile(
+        r"^(?P<name>.+?)[\s._-]+(?P<season>\d{1,2})x(?P<episode>\d{1,2})(?:[\s._-]*x(?P<episode_end>\d{1,2}))?",
+        re.IGNORECASE,
+    ),
+    # Season 1 Episode 2
+    re.compile(
+        r"^(?P<name>.+?)[\s._-]+Season[\s._-]+(?P<season>\d{1,2})[\s._-]+Episode[\s._-]+(?P<episode>\d{1,2})",
+        re.IGNORECASE,
+    ),
+)
+
+
+def parse_episode_metadata(stem: str) -> EpisodeMetadata | None:
     """
     Parses show title, season, episode, and optional ending episode from a filename stem.
-    Returns (raw_title, season, episode, episode_end) or None.
+    Returns EpisodeMetadata or None.
     """
-    patterns = [
-        # Standard S01E02 or S01E01-E02 or S01E01-02
-        re.compile(
-            r"^(?P<name>.+?)[\s._-]+[sS](?P<season>\d{1,2})[eE](?P<episode>\d{1,2})(?:[\s._-]*[eE-](?P<episode_end>\d{1,2}))?",
-            re.IGNORECASE,
-        ),
-        # 1x02 or 01x02
-        re.compile(
-            r"^(?P<name>.+?)[\s._-]+(?P<season>\d{1,2})x(?P<episode>\d{1,2})(?:[\s._-]*x(?P<episode_end>\d{1,2}))?",
-            re.IGNORECASE,
-        ),
-        # Season 1 Episode 2
-        re.compile(
-            r"^(?P<name>.+?)[\s._-]+Season[\s._-]+(?P<season>\d{1,2})[\s._-]+Episode[\s._-]+(?P<episode>\d{1,2})",
-            re.IGNORECASE,
-        ),
-    ]
-
-    for pattern in patterns:
+    for pattern in EPISODE_PATTERNS:
         m = pattern.search(stem)
         if m:
             d = m.groupdict()
-            name = d["name"]
-            season = int(d["season"])
-            episode = int(d["episode"])
-            episode_end = int(d["episode_end"]) if d.get("episode_end") else None
-            return name, season, episode, episode_end
+            return EpisodeMetadata(
+                title=d["name"],
+                season=int(d["season"]),
+                episode=int(d["episode"]),
+                episode_end=int(d["episode_end"]) if d.get("episode_end") else None,
+            )
 
     return None
 
@@ -298,22 +310,23 @@ def find_video_files(path: Path) -> list[Path]:
         return []
 
     videos: list[Path] = []
+    non_samples: list[Path] = []
     for root, _, files in os.walk(path):
         for f in files:
             p = Path(root) / f
             if is_video_file(p):
                 videos.append(p)
+                if (
+                    "sample" not in p.name.lower()
+                    and "sample" not in p.parent.name.lower()
+                ):
+                    non_samples.append(p)
 
     # Filter out sample files unless they are the only video files
-    non_samples = [
-        v
-        for v in videos
-        if "sample" not in v.name.lower() and "sample" not in v.parent.name.lower()
-    ]
     if non_samples:
         videos = non_samples
 
-    videos.sort(key=lambda p: p.name)
+    videos.sort(key=attrgetter("name"))
     return videos
 
 
@@ -343,8 +356,10 @@ def find_matching_subtitles(
                     elif season is not None and episode is not None:
                         sub_parsed = parse_episode_metadata(candidate.stem)
                         if sub_parsed:
-                            _, sub_s, sub_e, _ = sub_parsed
-                            if sub_s == season and sub_e == episode:
+                            if (
+                                sub_parsed.season == season
+                                and sub_parsed.episode == episode
+                            ):
                                 subs.append(candidate)
         except OSError:
             pass
@@ -360,23 +375,9 @@ def resolve_sources_and_dest(
     if not raw_sources:
         return [], None
 
-    dest_path: Path | None = (
-        Path(cli_dest).expanduser().resolve() if cli_dest else None
-    )
+    dest_path: Path | None = Path(cli_dest).expanduser().resolve() if cli_dest else None
     paths = [Path(p).expanduser().resolve() for p in raw_sources]
     return paths, dest_path
-
-
-def get_default_destination(first_source: Path) -> Path:
-    """Determine the default destination directory if none was explicitly given."""
-    env_dest = os.environ.get("TV_SHOWS_DIR") or os.environ.get("TORRENT_TV_DEST")
-    if env_dest:
-        return Path(env_dest).expanduser().resolve()
-
-    if DEFAULT_LIBRARY_PATH.is_dir():
-        return DEFAULT_LIBRARY_PATH
-
-    return first_source.parent if first_source.is_file() else first_source
 
 
 def process_video_file(
@@ -395,40 +396,41 @@ def process_video_file(
         return False
 
     # Attempt to parse from video filename stem
-    parsed = parse_episode_metadata(src_video.stem)
+    meta = parse_episode_metadata(src_video.stem)
 
     # Fallback: if video file stem is generic (e.g. video.mkv), try parent folder name
-    if not parsed and src_video.parent != src_video:
-        parsed = parse_episode_metadata(src_video.parent.name)
+    if not meta and src_video.parent != src_video:
+        meta = parse_episode_metadata(src_video.parent.name)
 
-    if not parsed:
+    if not meta:
         print(
             f"Error: Could not parse season and episode from: {src_video.name}",
             file=sys.stderr,
         )
         return False
 
-    raw_name, season, episode, episode_end = parsed
-    show_name = clean_show_name(raw_name)
+    show_name = clean_show_name(meta.title)
     show_name = find_matching_show_dir(dest_root, show_name)
 
     # Format destination filename: e.g. "Creature Commandos - s01e01.mkv"
     ext = src_video.suffix.lower()
-    if episode_end is not None:
-        ep_part = f"s{season:02d}e{episode:02d}-e{episode_end:02d}"
+    if meta.episode_end is not None:
+        ep_part = f"s{meta.season:02d}e{meta.episode:02d}-e{meta.episode_end:02d}"
     else:
-        ep_part = f"s{season:02d}e{episode:02d}"
+        ep_part = f"s{meta.season:02d}e{meta.episode:02d}"
 
     target_filename = f"{show_name} - {ep_part}{ext}"
-    target_dir = dest_root / show_name / f"Season {season}"
+    target_dir = dest_root / show_name / f"Season {meta.season}"
     target_path = target_dir / target_filename
 
     src_size = src_video.stat().st_size
     print("=" * 70)
     print(f"Show:        {show_name}")
-    print(f"Season:      {season}")
+    print(f"Season:      {meta.season}")
     ep_display = (
-        f"{episode:02d}" if episode_end is None else f"{episode:02d}-{episode_end:02d}"
+        f"{meta.episode:02d}"
+        if meta.episode_end is None
+        else f"{meta.episode:02d}-{meta.episode_end:02d}"
     )
     print(f"Episode:     {ep_display}")
     print(f"Source:      {src_video} ({format_size(src_size)})")
@@ -486,7 +488,7 @@ def process_video_file(
     print(f"Finished: Successfully copied to {target_path}")
 
     # Check and copy accompanying subtitle files if present
-    subtitles = find_matching_subtitles(src_video, season, episode)
+    subtitles = find_matching_subtitles(src_video, meta.season, meta.episode)
     for sub in subtitles:
         # Determine language tag if any, e.g. .eng.srt or .srt
         lang_match = re.search(r"\.([a-z]{2,3})\.[a-z0-9]+$", sub.name, re.IGNORECASE)
@@ -524,7 +526,7 @@ Examples:
         "--dest",
         "--destination",
         dest="destination",
-        help=f"Destination root directory (default: {DEFAULT_LIBRARY_PATH} if exists, else source directory)",
+        help=f"Destination root directory (default: {DEFAULT_LIBRARY_PATH})",
     )
     parser.add_argument(
         "-n",
@@ -569,8 +571,13 @@ Examples:
         print("Error: No source file or directory specified.", file=sys.stderr)
         return exit_with_pause(1)
 
-    default_dest = get_default_destination(sources[0])
-    destination_root = dest_path if dest_path is not None else default_dest
+    destination_root = dest_path if dest_path is not None else DEFAULT_LIBRARY_PATH
+    if not destination_root.is_dir():
+        print(
+            f"Error: Destination directory does not exist: {destination_root}",
+            file=sys.stderr,
+        )
+        return exit_with_pause(1)
 
     all_videos: list[Path] = []
     for src in sources:
