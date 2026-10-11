@@ -71,15 +71,17 @@ def clean_show_name(raw_name: str) -> str:
 
     # Check for a trailing 4-digit year: "Doctor Who 2005" -> "Doctor Who (2005)"
     year_match = re.search(r"^(.*?)\s*\(?((?:19|20)\d{2})\)?$", name)
-    year = None
+    year: str | None = None
     if year_match:
-        base_name, yr = year_match.group(1).strip(" -_."), year_match.group(2)
+        group1 = year_match.group(1)
+        group2 = year_match.group(2)
+        base_name = group1.strip(" -_.") if group1 else ""
         if base_name:
             name = base_name
-            year = yr
+            year = group2
 
     words = name.split()
-    cleaned_words = []
+    cleaned_words: list[str] = []
     for w in words:
         if w.isupper() and len(w) <= 3:
             cleaned_words.append(w)
@@ -355,12 +357,12 @@ def find_matching_subtitles(
                         subs.append(candidate)
                     elif season is not None and episode is not None:
                         sub_parsed = parse_episode_metadata(candidate.stem)
-                        if sub_parsed:
-                            if (
-                                sub_parsed.season == season
-                                and sub_parsed.episode == episode
-                            ):
-                                subs.append(candidate)
+                        if (
+                            sub_parsed
+                            and sub_parsed.season == season
+                            and sub_parsed.episode == episode
+                        ):
+                            subs.append(candidate)
         except OSError:
             pass
 
@@ -481,7 +483,7 @@ def process_video_file(
     except KeyboardInterrupt:
         print("\n\nOperation cancelled by user.")
         return False
-    except Exception as e:
+    except OSError as e:
         print(f"\nError copying file: {e}", file=sys.stderr)
         return False
 
