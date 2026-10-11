@@ -17,7 +17,6 @@ import sys
 import time
 from pathlib import Path
 
-
 VIDEO_EXTENSIONS = {
     ".mkv",
     ".mp4",
@@ -168,9 +167,13 @@ def render_progress_bar(
     speed_str = f"{format_size(speed)}/s" if speed > 0 else "--/s"
 
     remaining = (total - copied) / speed if speed > 0 else None
-    eta_str = f"ETA {format_time(remaining)}" if fraction < 1.0 else format_time(elapsed)
+    eta_str = (
+        f"ETA {format_time(remaining)}" if fraction < 1.0 else format_time(elapsed)
+    )
 
-    info_str = f"{percent:5.1f}% ({copied_str} / {total_str})  {speed_str:>11}  {eta_str:>9}"
+    info_str = (
+        f"{percent:5.1f}% ({copied_str} / {total_str})  {speed_str:>11}  {eta_str:>9}"
+    )
 
     if not is_tty:
         return f"Progress: {info_str}"
@@ -235,22 +238,30 @@ def copy_file_with_progress(
 
                 if is_tty:
                     if now - last_update_time >= 0.08 or copied == total_size:
-                        bar = render_progress_bar(copied, total_size, now - start_time, speed, is_tty=True)
+                        bar = render_progress_bar(
+                            copied, total_size, now - start_time, speed, is_tty=True
+                        )
                         sys.stdout.write("\r" + bar)
                         sys.stdout.flush()
                         last_update_time = now
                 else:
-                    percent = int((copied / total_size) * 100) if total_size > 0 else 100
+                    percent = (
+                        int((copied / total_size) * 100) if total_size > 0 else 100
+                    )
                     if percent // 10 > last_percent_printed:
                         last_percent_printed = percent // 10
-                        bar = render_progress_bar(copied, total_size, now - start_time, speed, is_tty=False)
+                        bar = render_progress_bar(
+                            copied, total_size, now - start_time, speed, is_tty=False
+                        )
                         sys.stdout.write(bar + "\n")
                         sys.stdout.flush()
 
         if is_tty:
             total_time = time.monotonic() - start_time
             avg_speed = copied / total_time if total_time > 0 else 0.0
-            final_bar = render_progress_bar(copied, total_size, total_time, avg_speed, is_tty=True)
+            final_bar = render_progress_bar(
+                copied, total_size, total_time, avg_speed, is_tty=True
+            )
             sys.stdout.write("\r" + final_bar + "\n")
             sys.stdout.flush()
 
@@ -295,7 +306,8 @@ def find_video_files(path: Path) -> list[Path]:
 
     # Filter out sample files unless they are the only video files
     non_samples = [
-        v for v in videos
+        v
+        for v in videos
         if "sample" not in v.name.lower() and "sample" not in v.parent.name.lower()
     ]
     if non_samples:
@@ -344,27 +356,13 @@ def resolve_sources_and_dest(
     raw_sources: list[str],
     cli_dest: str | None,
 ) -> tuple[list[Path], Path | None]:
-    """
-    Resolves input arguments into source paths and destination directory.
-    Handles qBittorrent arguments (%L %F) and positional destination arguments.
-    """
+    """Resolves input arguments into source paths and destination directory."""
     if not raw_sources:
         return [], None
 
-    # Handle qBittorrent '%L' '%F' where first arg is category (which doesn't exist on disk)
-    if len(raw_sources) == 2 and not Path(raw_sources[0]).exists() and Path(raw_sources[1]).exists():
-        raw_sources = [raw_sources[1]]
-
-    dest_path: Path | None = None
-    if cli_dest:
-        dest_path = Path(cli_dest).expanduser().resolve()
-    elif len(raw_sources) >= 2:
-        last = Path(raw_sources[-1]).expanduser()
-        # If last argument is an existing directory and not a video file
-        if last.is_dir() and not is_video_file(last):
-            dest_path = last.resolve()
-            raw_sources = raw_sources[:-1]
-
+    dest_path: Path | None = (
+        Path(cli_dest).expanduser().resolve() if cli_dest else None
+    )
     paths = [Path(p).expanduser().resolve() for p in raw_sources]
     return paths, dest_path
 
@@ -404,7 +402,10 @@ def process_video_file(
         parsed = parse_episode_metadata(src_video.parent.name)
 
     if not parsed:
-        print(f"Error: Could not parse season and episode from: {src_video.name}", file=sys.stderr)
+        print(
+            f"Error: Could not parse season and episode from: {src_video.name}",
+            file=sys.stderr,
+        )
         return False
 
     raw_name, season, episode, episode_end = parsed
@@ -426,7 +427,9 @@ def process_video_file(
     print("=" * 70)
     print(f"Show:        {show_name}")
     print(f"Season:      {season}")
-    ep_display = f"{episode:02d}" if episode_end is None else f"{episode:02d}-{episode_end:02d}"
+    ep_display = (
+        f"{episode:02d}" if episode_end is None else f"{episode:02d}-{episode_end:02d}"
+    )
     print(f"Episode:     {ep_display}")
     print(f"Source:      {src_video} ({format_size(src_size)})")
     print(f"Destination: {target_path}")
@@ -439,7 +442,11 @@ def process_video_file(
         if not force:
             if sys.stdin.isatty():
                 try:
-                    ans = input("Destination file already exists. Overwrite? [y/N]: ").strip().lower()
+                    ans = (
+                        input("Destination file already exists. Overwrite? [y/N]: ")
+                        .strip()
+                        .lower()
+                    )
                     if ans not in ("y", "yes"):
                         print("Skipping.")
                         return False
@@ -447,7 +454,9 @@ def process_video_file(
                     print("\nSkipping.")
                     return False
             else:
-                print("Destination already exists. Skipping (use --force to overwrite).")
+                print(
+                    "Destination already exists. Skipping (use --force to overwrite)."
+                )
                 return False
 
     if dry_run:
@@ -508,7 +517,7 @@ Examples:
     parser.add_argument(
         "source",
         nargs="*",
-        help="Video file or directory (or qBittorrent parameters: %%F or %%L %%F)",
+        help="Video file or directory (or qBittorrent parameter: %%F)",
     )
     parser.add_argument(
         "-d",
