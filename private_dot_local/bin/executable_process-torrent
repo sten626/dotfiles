@@ -1,0 +1,599 @@
+#!/usr/bin/env python3
+"""
+Process torrent video files:
+- Parses TV show title, season number, and episode number from the video filename.
+- Resolves destination show folder and season directory.
+- Copies the video file (instead of renaming/moving) with a real-time progress bar.
+"""
+
+from __future__ import annotations
+
+import argparse
+import collections
+import os
+import re
+import shutil
+import sys
+import time
+from pathlib import Path
+
+
+VIDEO_EXTENSIONS = {
+    ".mkv",
+    ".mp4",
+    ".avi",
+    ".m4v",
+    ".ts",
+    ".mov",
+    ".wmv",
+    ".webm",
+    ".flv",
+}
+
+DEFAULT_LIBRARY_PATH = Path("/mnt/titan/Media/TV Shows")
+
+
+def format_size(bytes_num: float) -> str:
+    """Format bytes into human-readable string (KB, MB, GB, etc.)."""
+    for unit in ["B", "KB", "MB", "GB", "TB"]:
+        if bytes_num < 1024.0:
+            return f"{bytes_num:3.2f} {unit}" if unit != "B" else f"{bytes_num:.0f} B"
+        bytes_num /= 1024.0
+    return f"{bytes_num:3.2f} PB"
+
+
+def format_time(seconds: float | None) -> str:
+    """Format seconds into HH:MM:SS or MM:SS."""
+    if seconds is None or seconds < 0 or seconds > 360000:
+        return "--:--"
+    m, s = divmod(int(seconds), 60)
+    h, m = divmod(m, 60)
+    if h > 0:
+        return f"{h:02d}:{m:02d}:{s:02d}"
+    return f"{m:02d}:{s:02d}"
+
+
+def clean_show_name(raw_name: str) -> str:
+    """
+    Cleans raw show name:
+    - Removes brackets/release group tags
+    - Replaces dots/underscores with spaces
+    - Normalizes year into parentheses: 'Show 2024' -> 'Show (2024)'
+    - Properly capitalizes words while handling apostrophes (e.g. DC's, Marvel's)
+    """
+    # Remove leading release group tags like [SubsPlease] or [HorribleSubs]
+    name = re.sub(r"^\[.*?\]\s*", "", raw_name)
+    # Replace dots and underscores with spaces
+    name = re.sub(r"[\._]+", " ", name)
+    # Strip leading/trailing punctuation and spaces
+    name = name.strip(" -_.")
+
+    # Check for a trailing 4-digit year: "Doctor Who 2005" -> "Doctor Who (2005)"
+    year_match = re.search(r"^(.*?)\s*\(?((?:19|20)\d{2})\)?$", name)
+    year = None
+    if year_match:
+        base_name, yr = year_match.group(1).strip(" -_."), year_match.group(2)
+        if base_name:
+            name = base_name
+            year = yr
+
+    words = name.split()
+    cleaned_words = []
+    for w in words:
+        if w.isupper() and len(w) <= 3:
+            cleaned_words.append(w)
+        elif "'" in w:
+            parts = w.split("'", 1)
+            cleaned_words.append(parts[0].capitalize() + "'" + parts[1].lower())
+        else:
+            cleaned_words.append(w.capitalize())
+
+    cleaned = " ".join(cleaned_words)
+    if year:
+        cleaned = f"{cleaned} ({year})"
+    return cleaned
+
+
+def find_matching_show_dir(dest_dir: Path, show_name: str) -> str:
+    """
+    If a show directory already exists in dest_dir matching show_name
+    (case-insensitive, ignoring special characters), reuse the existing folder name.
+    """
+    if not dest_dir.is_dir():
+        return show_name
+
+    def normalize(s: str) -> str:
+        return re.sub(r"[^a-z0-9]", "", s.lower())
+
+    norm_target = normalize(show_name)
+    try:
+        for entry in dest_dir.iterdir():
+            if entry.is_dir() and normalize(entry.name) == norm_target:
+                return entry.name
+    except OSError:
+        pass
+
+    return show_name
+
+
+def parse_episode_metadata(stem: str) -> tuple[str, int, int, int | None] | None:
+    """
+    Parses show title, season, episode, and optional ending episode from a filename stem.
+    Returns (raw_title, season, episode, episode_end) or None.
+    """
+    patterns = [
+        # Standard S01E02 or S01E01-E02 or S01E01-02
+        re.compile(
+            r"^(?P<name>.+?)[\s._-]+[sS](?P<season>\d{1,2})[eE](?P<episode>\d{1,2})(?:[\s._-]*[eE-](?P<episode_end>\d{1,2}))?",
+            re.IGNORECASE,
+        ),
+        # 1x02 or 01x02
+        re.compile(
+            r"^(?P<name>.+?)[\s._-]+(?P<season>\d{1,2})x(?P<episode>\d{1,2})(?:[\s._-]*x(?P<episode_end>\d{1,2}))?",
+            re.IGNORECASE,
+        ),
+        # Season 1 Episode 2
+        re.compile(
+            r"^(?P<name>.+?)[\s._-]+Season[\s._-]+(?P<season>\d{1,2})[\s._-]+Episode[\s._-]+(?P<episode>\d{1,2})",
+            re.IGNORECASE,
+        ),
+    ]
+
+    for pattern in patterns:
+        m = pattern.search(stem)
+        if m:
+            d = m.groupdict()
+            name = d["name"]
+            season = int(d["season"])
+            episode = int(d["episode"])
+            episode_end = int(d["episode_end"]) if d.get("episode_end") else None
+            return name, season, episode, episode_end
+
+    return None
+
+
+def render_progress_bar(
+    copied: int,
+    total: int,
+    elapsed: float,
+    speed: float,
+    is_tty: bool = True,
+) -> str:
+    """Renders a progress bar string with percentage, speed, and ETA."""
+    fraction = copied / total if total > 0 else 0.0
+    percent = fraction * 100.0
+
+    copied_str = format_size(copied)
+    total_str = format_size(total)
+    speed_str = f"{format_size(speed)}/s" if speed > 0 else "--/s"
+
+    remaining = (total - copied) / speed if speed > 0 else None
+    eta_str = f"ETA {format_time(remaining)}" if fraction < 1.0 else format_time(elapsed)
+
+    info_str = f"{percent:5.1f}% ({copied_str} / {total_str})  {speed_str:>11}  {eta_str:>9}"
+
+    if not is_tty:
+        return f"Progress: {info_str}"
+
+    term_width = shutil.get_terminal_size((80, 20)).columns
+    # 2 chars for '[', ']', plus 1 space between bar and info_str
+    bar_width = term_width - len(info_str) - 3
+    if bar_width < 10:
+        return info_str[:term_width]
+
+    filled = int(fraction * bar_width)
+    if filled >= bar_width:
+        bar = "=" * bar_width
+    elif filled > 0:
+        bar = "=" * (filled - 1) + ">" + " " * (bar_width - filled)
+    else:
+        bar = " " * bar_width
+
+    return f"[{bar}] {info_str}"
+
+
+def copy_file_with_progress(
+    src: Path,
+    dst: Path,
+    buffer_size: int = 2 * 1024 * 1024,
+) -> None:
+    """
+    Copies src to dst showing real-time progress.
+    Writes to a temporary .part file first to guarantee atomic and safe copying.
+    """
+    total_size = src.stat().st_size
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    part_dst = dst.with_name(dst.name + ".part")
+
+    copied = 0
+    start_time = time.monotonic()
+    last_update_time = 0.0
+
+    # Sliding window to calculate recent transfer speed
+    speed_history = collections.deque([(start_time, 0)])
+
+    is_tty = sys.stdout.isatty()
+    last_percent_printed = -1
+
+    try:
+        with open(src, "rb") as f_src, open(part_dst, "wb") as f_dst:
+            while True:
+                chunk = f_src.read(buffer_size)
+                if not chunk:
+                    break
+                f_dst.write(chunk)
+                copied += len(chunk)
+
+                now = time.monotonic()
+                while speed_history and now - speed_history[0][0] > 1.5:
+                    speed_history.popleft()
+                speed_history.append((now, copied))
+
+                dt = now - speed_history[0][0]
+                dbytes = copied - speed_history[0][1]
+                speed = dbytes / dt if dt > 0.05 else 0.0
+
+                if is_tty:
+                    if now - last_update_time >= 0.08 or copied == total_size:
+                        bar = render_progress_bar(copied, total_size, now - start_time, speed, is_tty=True)
+                        sys.stdout.write("\r" + bar)
+                        sys.stdout.flush()
+                        last_update_time = now
+                else:
+                    percent = int((copied / total_size) * 100) if total_size > 0 else 100
+                    if percent // 10 > last_percent_printed:
+                        last_percent_printed = percent // 10
+                        bar = render_progress_bar(copied, total_size, now - start_time, speed, is_tty=False)
+                        sys.stdout.write(bar + "\n")
+                        sys.stdout.flush()
+
+        if is_tty:
+            total_time = time.monotonic() - start_time
+            avg_speed = copied / total_time if total_time > 0 else 0.0
+            final_bar = render_progress_bar(copied, total_size, total_time, avg_speed, is_tty=True)
+            sys.stdout.write("\r" + final_bar + "\n")
+            sys.stdout.flush()
+
+        # Copy timestamps and permissions
+        shutil.copystat(src, part_dst)
+
+        # Atomic replacement
+        part_dst.replace(dst)
+
+    except (KeyboardInterrupt, Exception):
+        # Cleanup incomplete file on cancel/error
+        if part_dst.exists():
+            try:
+                part_dst.unlink()
+            except OSError:
+                pass
+        raise
+
+
+def is_video_file(path: Path) -> bool:
+    """Check if the given path is a recognized video file."""
+    return path.is_file() and path.suffix.lower() in VIDEO_EXTENSIONS
+
+
+def find_video_files(path: Path) -> list[Path]:
+    """
+    Find video files from path. If path is a file, returns [path].
+    If path is a directory, finds video files, filtering out samples.
+    """
+    if path.is_file():
+        return [path]
+
+    if not path.is_dir():
+        return []
+
+    videos: list[Path] = []
+    for root, _, files in os.walk(path):
+        for f in files:
+            p = Path(root) / f
+            if is_video_file(p):
+                videos.append(p)
+
+    # Filter out sample files unless they are the only video files
+    non_samples = [
+        v for v in videos
+        if "sample" not in v.name.lower() and "sample" not in v.parent.name.lower()
+    ]
+    if non_samples:
+        videos = non_samples
+
+    videos.sort(key=lambda p: p.name)
+    return videos
+
+
+def find_matching_subtitles(
+    video_path: Path,
+    season: int | None = None,
+    episode: int | None = None,
+) -> list[Path]:
+    """Find any subtitle files in the video's directory or subfolders matching the video file."""
+    sub_exts = {".srt", ".sub", ".vtt", ".idx"}
+    subs: list[Path] = []
+    parent = video_path.parent
+    stem = video_path.stem
+
+    candidate_dirs = [parent]
+    for subfolder_name in ("Subs", "subs", "Subtitles", "subtitles"):
+        sub_folder = parent / subfolder_name
+        if sub_folder.is_dir():
+            candidate_dirs.append(sub_folder)
+
+    for c_dir in candidate_dirs:
+        try:
+            for candidate in c_dir.iterdir():
+                if candidate.is_file() and candidate.suffix.lower() in sub_exts:
+                    if candidate.stem == stem or candidate.stem.startswith(stem + "."):
+                        subs.append(candidate)
+                    elif season is not None and episode is not None:
+                        sub_parsed = parse_episode_metadata(candidate.stem)
+                        if sub_parsed:
+                            _, sub_s, sub_e, _ = sub_parsed
+                            if sub_s == season and sub_e == episode:
+                                subs.append(candidate)
+        except OSError:
+            pass
+
+    return sorted(subs)
+
+
+def resolve_sources_and_dest(
+    raw_sources: list[str],
+    cli_dest: str | None,
+) -> tuple[list[Path], Path | None]:
+    """
+    Resolves input arguments into source paths and destination directory.
+    Handles qBittorrent arguments (%L %F) and positional destination arguments.
+    """
+    if not raw_sources:
+        return [], None
+
+    # Handle qBittorrent '%L' '%F' where first arg is category (which doesn't exist on disk)
+    if len(raw_sources) == 2 and not Path(raw_sources[0]).exists() and Path(raw_sources[1]).exists():
+        raw_sources = [raw_sources[1]]
+
+    dest_path: Path | None = None
+    if cli_dest:
+        dest_path = Path(cli_dest).expanduser().resolve()
+    elif len(raw_sources) >= 2:
+        last = Path(raw_sources[-1]).expanduser()
+        # If last argument is an existing directory and not a video file
+        if last.is_dir() and not is_video_file(last):
+            dest_path = last.resolve()
+            raw_sources = raw_sources[:-1]
+
+    paths = [Path(p).expanduser().resolve() for p in raw_sources]
+    return paths, dest_path
+
+
+def get_default_destination(first_source: Path) -> Path:
+    """Determine the default destination directory if none was explicitly given."""
+    env_dest = os.environ.get("TV_SHOWS_DIR") or os.environ.get("TORRENT_TV_DEST")
+    if env_dest:
+        return Path(env_dest).expanduser().resolve()
+
+    if DEFAULT_LIBRARY_PATH.is_dir():
+        return DEFAULT_LIBRARY_PATH
+
+    return first_source.parent if first_source.is_file() else first_source
+
+
+def process_video_file(
+    src_video: Path,
+    dest_root: Path,
+    dry_run: bool = False,
+    force: bool = False,
+    interactive: bool = False,
+) -> bool:
+    """
+    Parses metadata and copies the video file to dest_root.
+    Returns True on success, False on error/skip.
+    """
+    if not src_video.exists():
+        print(f"Error: File does not exist: {src_video}", file=sys.stderr)
+        return False
+
+    # Attempt to parse from video filename stem
+    parsed = parse_episode_metadata(src_video.stem)
+
+    # Fallback: if video file stem is generic (e.g. video.mkv), try parent folder name
+    if not parsed and src_video.parent != src_video:
+        parsed = parse_episode_metadata(src_video.parent.name)
+
+    if not parsed:
+        print(f"Error: Could not parse season and episode from: {src_video.name}", file=sys.stderr)
+        return False
+
+    raw_name, season, episode, episode_end = parsed
+    show_name = clean_show_name(raw_name)
+    show_name = find_matching_show_dir(dest_root, show_name)
+
+    # Format destination filename: e.g. "Creature Commandos - s01e01.mkv"
+    ext = src_video.suffix.lower()
+    if episode_end is not None:
+        ep_part = f"s{season:02d}e{episode:02d}-e{episode_end:02d}"
+    else:
+        ep_part = f"s{season:02d}e{episode:02d}"
+
+    target_filename = f"{show_name} - {ep_part}{ext}"
+    target_dir = dest_root / show_name / f"Season {season}"
+    target_path = target_dir / target_filename
+
+    src_size = src_video.stat().st_size
+    print("=" * 70)
+    print(f"Show:        {show_name}")
+    print(f"Season:      {season}")
+    ep_display = f"{episode:02d}" if episode_end is None else f"{episode:02d}-{episode_end:02d}"
+    print(f"Episode:     {ep_display}")
+    print(f"Source:      {src_video} ({format_size(src_size)})")
+    print(f"Destination: {target_path}")
+
+    # Check if destination already exists
+    if target_path.exists():
+        if dry_run:
+            print("[DRY RUN] Destination file already exists.")
+            return True
+        if not force:
+            if sys.stdin.isatty():
+                try:
+                    ans = input("Destination file already exists. Overwrite? [y/N]: ").strip().lower()
+                    if ans not in ("y", "yes"):
+                        print("Skipping.")
+                        return False
+                except (EOFError, KeyboardInterrupt):
+                    print("\nSkipping.")
+                    return False
+            else:
+                print("Destination already exists. Skipping (use --force to overwrite).")
+                return False
+
+    if dry_run:
+        print("[DRY RUN] Would copy video file.")
+        return True
+
+    if interactive and sys.stdin.isatty():
+        try:
+            ans = input("Proceed with copy? [Y/n]: ").strip().lower()
+            if ans in ("n", "no"):
+                print("Aborted.")
+                return False
+        except (EOFError, KeyboardInterrupt):
+            print("\nAborted.")
+            return False
+
+    print("\nCopying video...")
+    try:
+        copy_file_with_progress(src_video, target_path)
+    except KeyboardInterrupt:
+        print("\n\nOperation cancelled by user.")
+        return False
+    except Exception as e:
+        print(f"\nError copying file: {e}", file=sys.stderr)
+        return False
+
+    print(f"Finished: Successfully copied to {target_path}")
+
+    # Check and copy accompanying subtitle files if present
+    subtitles = find_matching_subtitles(src_video, season, episode)
+    for sub in subtitles:
+        # Determine language tag if any, e.g. .eng.srt or .srt
+        lang_match = re.search(r"\.([a-z]{2,3})\.[a-z0-9]+$", sub.name, re.IGNORECASE)
+        lang_suffix = f".{lang_match.group(1).lower()}" if lang_match else ""
+        sub_dest_name = f"{show_name} - {ep_part}{lang_suffix}{sub.suffix.lower()}"
+        sub_dest = target_dir / sub_dest_name
+        try:
+            shutil.copy2(sub, sub_dest)
+            print(f"Copied subtitle: {sub.name} -> {sub_dest.name}")
+        except OSError as e:
+            print(f"Warning: Failed to copy subtitle {sub.name}: {e}", file=sys.stderr)
+
+    return True
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Parse TV show metadata and copy video file with progress to organized library directory.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  process-torrent "Creature.Commandos.S01E01.1080p.mkv"
+  process-torrent -d "/mnt/titan/Media/TV Shows" "Doctor.Who.2005.S12E01.mkv"
+  process-torrent --dry-run "Show.Name.S01E01.mkv"
+  process-torrent "Downloads/Show.S01E01.Folder"
+""",
+    )
+    parser.add_argument(
+        "source",
+        nargs="*",
+        help="Video file or directory (or qBittorrent parameters: %%F or %%L %%F)",
+    )
+    parser.add_argument(
+        "-d",
+        "--dest",
+        "--destination",
+        dest="destination",
+        help=f"Destination root directory (default: {DEFAULT_LIBRARY_PATH} if exists, else source directory)",
+    )
+    parser.add_argument(
+        "-n",
+        "--dry-run",
+        action="store_true",
+        help="Simulate parsing and show destination without copying",
+    )
+    parser.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="Overwrite existing destination files without prompting",
+    )
+    parser.add_argument(
+        "-i",
+        "--interactive",
+        action="store_true",
+        help="Prompt for confirmation before copying",
+    )
+    parser.add_argument(
+        "--pause",
+        action="store_true",
+        help="Wait for Enter before exiting (useful for console windows)",
+    )
+
+    args = parser.parse_args()
+
+    def exit_with_pause(code: int) -> int:
+        if args.pause and sys.stdin.isatty():
+            try:
+                input("\nPress Enter to close this window...")
+            except (EOFError, KeyboardInterrupt):
+                pass
+        return code
+
+    if not args.source:
+        parser.print_help()
+        return exit_with_pause(1)
+
+    sources, dest_path = resolve_sources_and_dest(args.source, args.destination)
+    if not sources:
+        print("Error: No source file or directory specified.", file=sys.stderr)
+        return exit_with_pause(1)
+
+    default_dest = get_default_destination(sources[0])
+    destination_root = dest_path if dest_path is not None else default_dest
+
+    all_videos: list[Path] = []
+    for src in sources:
+        if not src.exists():
+            print(f"Error: Path does not exist: {src}", file=sys.stderr)
+            continue
+        videos = find_video_files(src)
+        if not videos:
+            print(f"Warning: No video files found in: {src}", file=sys.stderr)
+        else:
+            all_videos.extend(videos)
+
+    if not all_videos:
+        print("Error: No valid video files found to process.", file=sys.stderr)
+        return exit_with_pause(1)
+
+    success_count = 0
+    for video in all_videos:
+        ok = process_video_file(
+            video,
+            destination_root,
+            dry_run=args.dry_run,
+            force=args.force,
+            interactive=args.interactive,
+        )
+        if ok:
+            success_count += 1
+
+    print("\n" + "=" * 70)
+    print(f"Processed {success_count}/{len(all_videos)} video(s) successfully.")
+    return exit_with_pause(0 if success_count > 0 else 1)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
