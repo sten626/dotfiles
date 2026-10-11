@@ -1,39 +1,42 @@
 {
   "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
   },
   "[scss]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "angular.enable-strict-mode-prompt": false,
   "angular.forceStrictTemplates": true,
   "deno.suggest.imports.hosts": {
-    "https://deno.land": true,
+    "https://deno.land": true
   },
   "editor.cursorBlinking": "smooth",
   "editor.cursorSmoothCaretAnimation": "on",
   "editor.fontFamily": "'FiraCode Nerd Font Mono', 'Droid Sans Mono', monospace",
   "editor.formatOnSave": true,
   "editor.renderWhitespace": "selection",
-  "editor.rulers": [100],
+  "editor.rulers": [88],
   "editor.suggestSelection": "first",
   "emmet.preferences": {
-    "profile.allowCompactBoolean": true,
+    "profile.allowCompactBoolean": true
   },
   "emmet.triggerExpansionOnTab": true,
   "files.eol": "\n",
@@ -51,11 +54,11 @@
     "https://raw.githubusercontent.com/microsoft/vscode/": true,
     "https://schemastore.azurewebsites.net/": true,
     "https://turborepo.dev/schema.json": true,
-    "https://www.schemastore.org/": true,
+    "https://www.schemastore.org/": true
   },
   "python.analysis.typeCheckingMode": "strict",
   "shellcheck.customArgs": ["-x"],
   "terminal.external.windowsExec": "C:\\WINDOWS\\sysnative\\bash.exe",
   "workbench.editor.highlightModifiedTabs": true,
-  "workbench.statusBar.visible": true,
+  "workbench.statusBar.visible": true
 }
