@@ -15,7 +15,7 @@
 {{-   $is_work = true -}}
 {{- end -}}
 {{- $is_gnome := false -}}
-{{- if eq .chezmoi.osRelease.variantID "workstation" -}}
+{{- if and (hasKey .chezmoi "osRelease") (hasKey .chezmoi.osRelease "variantID") (eq .chezmoi.osRelease.variantID "workstation") -}}
 {{-   $is_gnome = true -}}
 {{- end -}}
 
