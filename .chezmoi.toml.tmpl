@@ -11,7 +11,7 @@
 {{-   $email = promptStringOnce . "email" "Email" -}}
 {{- end -}}
 {{- $is_work := false -}}
-{{- if eq .chezmoi.username "sindzeos" -}}
+{{- if has .chezmoi.username (list "m3nlgx" "sindzeos") -}}
 {{-   $is_work = true -}}
 {{- end -}}
 {{- $is_gnome := false -}}
