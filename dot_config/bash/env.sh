@@ -36,7 +36,5 @@ export NVM_DIR="$XDG_CONFIG_HOME/nvm"
 # pnpm
 export PNPM_HOME="$XDG_DATA_HOME/pnpm"
 path_prepend "$PNPM_HOME/bin"
-# pnpm end
-
 
 export PATH

@@ -18,11 +18,14 @@
 {{- if and (hasKey .chezmoi "osRelease") (hasKey .chezmoi.osRelease "variantID") (eq .chezmoi.osRelease.variantID "workstation") -}}
 {{-   $is_gnome = true -}}
 {{- end -}}
+{{- $login := (bitwarden "item" "e98e8e79-10f2-4188-8a1f-b36d01283e21").login -}}
 
 [bitwarden]
 unlock = "auto"
 
 [data]
+cifs_username = {{ $login.username | quote }}
+cifs_password = {{ $login.password | quote }}
 email = {{ $email | quote }}
 is_gnome = {{ $is_gnome }}
 is_work = {{ $is_work }}
