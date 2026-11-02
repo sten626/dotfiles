@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Capture Steam's overlay preload if present
+steam_preload="$LD_PRELOAD"
+
 # Find the active primary display
 primary_dir=""
 for card in /sys/class/drm/card*-*; do
@@ -29,5 +32,36 @@ if [ -z "$width" ] || [ -z "$height" ]; then
   height=1080
 fi
 
-# Run gamescope using primary display
-exec gamescope -W "$width" -H "$height" "$@"
+# Separate any gamescope flags from the child game command
+gamescope_args=()
+game_cmd=()
+found_sep=false
+
+for arg in "$@"; do
+  if [ "$found_sep" = true ]; then
+    game_cmd+=("$arg")
+  elif [ "$arg" = "--" ]; then
+    found_sep=true
+  else
+    gamescope_args+=("$arg")
+  fi
+done
+
+# If no '--' was provided, assume arguments without leading dashes are the game command
+if [ "$found_sep" = false ]; then
+  if [ "$#" -gt 0 ] && [[ "$1" != -* ]]; then
+    game_cmd=("$@")
+    gamescope_args=()
+  else
+    gamescope_args=("$@")
+  fi
+fi
+
+# Run gamescope with LD_PRELOAD isolated to the game process
+if [ -n "$steam_preload" ] && [ ${#game_cmd[@]} -gt 0 ]; then
+  exec env -u LD_PRELOAD gamescope --fullscreen --output-width "$width" --output-height "$height" "${gamescope_args[@]}" -- env LD_PRELOAD="$steam_preload" "${game_cmd[@]}"
+elif [ ${#game_cmd[@]} -gt 0 ]; then
+  exec gamescope --fullscreen --output-width "$width" --output-height "$height" "${gamescope_args[@]}" -- "${game_cmd[@]}"
+else
+  exec gamescope --fullscreen --output-width "$width" --output-height "$height" "${gamescope_args[@]}"
+fi
