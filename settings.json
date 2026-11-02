@@ -37,6 +37,13 @@
   "files.eol": "\n",
   "git.autofetch": true,
   "git.confirmSync": false,
+  "github.copilot.enable": {
+    "*": false,
+    "markdown": false,
+    "plaintext": false,
+    "scminput": false,
+  },
+  "github.copilot.nextEditSuggestions.eagerness": "low",
   "json.schemaDownload.trustedDomains": {
     "https://app.kilo.ai": true,
     "https://developer.microsoft.com/json-schemas/": true,

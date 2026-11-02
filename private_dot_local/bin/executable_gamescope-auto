@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Find the active primary display
+primary_dir=""
+for card in /sys/class/drm/card*-*; do
+  if [ -f "$card/status" ] && [ "$(cat "$card/status")" = "connected" ]; then
+    if [ -f "$card/enabled" ] && [ "$(cat "$card/enabled")" = "enabled" ]; then
+      if [ -f "$card/primary" ] && [ "$(cat "$card/primary")" = "1" ]; then
+        primary_dir="$card"
+        break
+      fi
+
+      # Fallback: use this enabled card if we haven't explicitly found primary yet
+      [ -z "$primary_dir" ] && primary_dir="$card"
+    fi
+  fi
+done
+
+# Extract the first active mode (native resolution) from the modes file
+if [ -n "$primary_dir" ] && [ -f "$primary_dir/modes" ]; then
+  native_res=$(head --lines 1 "$primary_dir/modes")
+  width=$(echo "$native_res" | cut --delimiter x --fields 1)
+  height=$(echo "$native_res" | cut --delimiter x --fields 2)
+fi
+
+# Default fallback if something went wrong
+if [ -z "$width" ] || [ -z "$height" ]; then
+  width=1920
+  height=1080
+fi
+
+# Run gamescope using primary display
+exec gamescope -W "$width" -H "$height" "$@"
