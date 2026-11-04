@@ -16,6 +16,7 @@
   },
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
   },
   "[scss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -23,10 +24,12 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
+  "claudeCode.preferredLocation": "panel",
   "editor.cursorBlinking": "smooth",
   "editor.cursorSmoothCaretAnimation": "on",
   "editor.fontFamily": "'FiraCode Nerd Font Mono', 'Droid Sans Mono', monospace",
-  "editor.formatOnSave": true,
+  "editor.fontLigatures": true,
+  "editor.formatOnSave": false,
   "editor.renderWhitespace": "selection",
   "editor.rulers": [88],
   "editor.suggestSelection": "first",
@@ -59,11 +62,12 @@
     "https://turborepo.dev/schema.json": true,
     "https://www.schemastore.org/": true,
   },
+  "python.analysis.nodeArguments": ["--max-old-space-size=8192"],
   "python.analysis.typeCheckingMode": "strict",
   "shellcheck.customArgs": ["-x"],
   "window.autoDetectColorScheme": true,
   "workbench.editor.highlightModifiedTabs": true,
-  "workbench.iconTheme": "catppuccin-mocha",
+  "workbench.iconTheme": "catppuccin-latte",
   "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
   "workbench.preferredLightColorTheme": "Catppuccin Latte",
 }
