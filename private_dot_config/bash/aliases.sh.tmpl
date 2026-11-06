@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+# chezmoi:template:left-delimiter="# {{"
 
 # Navigation
 
@@ -28,13 +29,10 @@ alias ku1='kill -USR1'
 
 # Enable any OS specific aliases
 
-# {{- if eq .chezmoi.osRelease.id "fedora" }} 
+# {{- if eq .osid "linux-centos" "linux-fedora" }}
 alias i='sudo dnf install'
-alias u='sudo dnf upgrade'
-# {{- else if eq .chezmoi.osRelease.id "ubuntu" }}
+alias u='sudo dnf upgrade; command -v pnpm &> /dev/null && pnpm -g update'
+# {{- else if eq .osid "linux-ubuntu" }}
 alias i='sudo apt install'
-alias u='sudo apt update && sudo apt upgrade'
-# {{- else if eq .chezmoi.osRelease.id "centos" }}
-alias i='sudo yum install'
-alias u='sudo yum update'
+alias u='sudo apt update && sudo apt upgrade; command -v pnpm &> /dev/null && pnpm -g update'
 # {{- end }}

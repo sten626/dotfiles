@@ -19,6 +19,10 @@
 {{-   $is_gnome = true -}}
 {{- end -}}
 {{- $login := (bitwarden "item" "e98e8e79-10f2-4188-8a1f-b36d01283e21").login -}}
+{{- $osid := .chezmoi.os -}}
+{{- if hasKey .chezmoi.osRelease "id" -}}
+{{-   $osid = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{- end -}}
 
 [bitwarden]
 unlock = "auto"
@@ -30,6 +34,7 @@ email = {{ $email | quote }}
 is_gnome = {{ $is_gnome }}
 is_work = {{ $is_work }}
 name = {{ $name | quote }}
+osid = {{ $osid | quote }}
 xdg_cache_home = "{{ .chezmoi.homeDir }}/.cache"
 xdg_config_home = "{{ .chezmoi.homeDir }}/.config"
 xdg_data_home = "{{ .chezmoi.homeDir }}/.local/share"
